@@ -1,18 +1,14 @@
 "use client"
+import { signOut } from 'next-auth/react'
+import React from 'react'
 
-import { signIn } from "next-auth/react";
-
-export default function Home() {
-    const handleSignin = async () => {
-      await signIn("google", {
-        redirect: false
-      })
-    }
+function Home() {
   return (
-    <>
-    <main>
-      <button onClick={handleSignin}>Sign In</button>
-    </main>
-    </>
-  );
+    <div>Home Page
+
+    <button onClick={()=>signOut()}>Sign Out</button>
+    </div>
+  )
 }
+
+export default Home
