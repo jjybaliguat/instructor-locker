@@ -1,5 +1,4 @@
 // @ts-nocheck
-import { PrismaClient } from "@prisma/client";
 import GoogleProvider from "next-auth/providers/google";
 
 export const options = {
