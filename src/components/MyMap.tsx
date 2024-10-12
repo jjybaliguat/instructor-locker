@@ -72,12 +72,10 @@ const Map = () => {
     }
 
     return (
-        <div>
-            <SearchLocation />
-            <GetMyLocation />
+        <div className='w-full h-[600px] z-40'>
             <MapContainer style={{
-                height: '100vh',
-                width: '100vw'
+                height: '100%',
+                width: '100%'
             }} center={coord} zoom={13} scrollWheelZoom={false}>
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -96,7 +94,7 @@ const Map = () => {
                     })
                 } position={coord}>
                      <Popup>
-                        A pretty CSS3 popup. <br /> Easily customizable.
+                        Mini Bus 3. <br /> Driver: Unknown <br /> Plate Number: 00-000 <br /> Route: via San Isdro - Litex
                     </Popup>
                 </Marker>
                 <Marker icon={
@@ -111,7 +109,7 @@ const Map = () => {
                     })
                 } position={coord2}>
                      <Popup>
-                        A pretty CSS3 popup. <br /> Easily customizable.
+                        Mini Bus 4. <br /> Driver: Unknown <br /> Plate Number: 00-000 <br /> Route: via San Isdro - Litex
                     </Popup>
                 </Marker>
                 <Marker icon={
@@ -126,7 +124,7 @@ const Map = () => {
                     })
                 } position={coord3}>
                      <Popup>
-                        A pretty CSS3 popup. <br /> Easily customizable.
+                     Mini Bus 2. <br /> Driver: Unknown <br /> Plate Number: 00-000 <br /> Route: via San Isdro - Litex
                     </Popup>
                 </Marker>
                 <Marker icon={
@@ -141,7 +139,7 @@ const Map = () => {
                     })
                 } position={coord4}>
                      <Popup>
-                        A pretty CSS3 popup. <br /> Easily customizable.
+                        Mini Bus 1. <br /> Driver: Unknown <br /> Plate Number: 00-000 <br /> Route: via San Isdro - Litex
                     </Popup>
                 </Marker>
             </MapContainer>
