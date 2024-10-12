@@ -1,4 +1,3 @@
-// @ts-nocheck
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { PrismaClient } from "@prisma/client";
@@ -63,7 +62,7 @@ export const options = {
      */
     async session({ session, token }) {
       if (token) {
-        session.user.id = token.id as string;  // Attach user ID to session
+        session.user.id = token.id;  // Attach user ID to session
         session.accessToken = token.accessToken;
       }
 

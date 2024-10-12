@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import { options } from "@/lib/auth"
 import nextAuth from "next-auth"
 

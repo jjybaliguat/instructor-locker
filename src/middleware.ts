@@ -1,12 +1,12 @@
 // middleware.ts
 
 import { getToken } from "next-auth/jwt";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 // Define your secret key for JWT
 const secret = process.env.NEXTAUTH_SECRET;  // Make sure to set this in your .env file
 
-export async function middleware(req: any) {
+export async function middleware(req: NextRequest) {
   // Get the session token from the request cookies
   const token = await getToken({ req, secret });
 
