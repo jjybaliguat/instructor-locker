@@ -2,8 +2,9 @@
 
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Circle, Tooltip } from 'react-leaflet'
 import { useEffect, useState } from 'react'
+import MyCurrentLocationMarker from './MyCurrentLocationMarker'
 
 const Map = () => {
 
@@ -49,28 +50,6 @@ const Map = () => {
         )
     }
 
-    const GetMyLocation = () => {
-        const getMyLocation = () => {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition((position) => {
-                    setCoord([position.coords.latitude, position.coords.longitude])
-                })
-            } else {
-                console.log("Geolocation is not supported by this browser.")
-            }
-        }
-
-        return (
-            <div className="get-my-location">
-                <button onClick={getMyLocation}>Get My Location</button>
-            </div>
-        )
-    }
-
-    if(window === undefined){
-        return null
-    }
-
     return (
         <div className='w-full h-[600px] z-40'>
             <MapContainer style={{
@@ -81,7 +60,26 @@ const Map = () => {
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-
+                <MyCurrentLocationMarker />
+                <Circle center={[14.7607, 121.1568]} pathOptions={{ fillColor: 'blue' }} radius={200} />
+                <Marker icon={
+                    new L.Icon({
+                        iconUrl: '/terminal-bus.png',
+                        iconRetinaUrl: '/terminal-bus.png',
+                        iconSize: [100, 100],
+                        iconAnchor: [50, 50],
+                        popupAnchor: [0, -41],
+                        shadowUrl: '/marker-shadow.png',
+                        shadowSize: [80, 80],
+                    })
+                } position={[14.7607, 121.1568]}>
+                     {/* <Popup>
+                        Mini Bus San Isidro Terminal
+                    </Popup> */}
+                    <Tooltip direction="top" offset={[0, -30]} opacity={1} permanent>
+                        San Isidro Mini Bus Terminal
+                    </Tooltip>
+                </Marker>
                 <Marker icon={
                     new L.Icon({
                         iconUrl: '/marker-icon.png',
