@@ -9,6 +9,7 @@ import {
   CardTitle
 } from '@/components/ui/card';
 import dynamic from 'next/dynamic';
+import useSWR from "swr"
 
 // Dynamically import the map component
 const MyMap = dynamic(() => import('@/components/MyMap'), {
@@ -17,8 +18,10 @@ const MyMap = dynamic(() => import('@/components/MyMap'), {
 import React from 'react'
 import { BusIcon } from 'lucide-react';
 import { Heading } from '@/components/ui/heading';
+import { getTotalDevice } from '../actions';
 
 function Home() {
+  const {data: totalDevice, isLoading} = useSWR("getTotalDevice", getTotalDevice)
   return (
     <PageContainer>
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -30,7 +33,7 @@ function Home() {
           <BusIcon />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">4</div>
+          <div className="text-2xl font-bold">{totalDevice}</div>
         </CardContent>
       </Card>  
     </div>

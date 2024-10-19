@@ -88,8 +88,7 @@ model LocationLogs {
   id      String   @id @default(auto()) @map("_id") @db.ObjectId
   long    String
   lat     String
-  time    String
-  deviceId String @db.ObjectId @unique
+  deviceId String @db.ObjectId
   device  Device @relation(fields: [deviceId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
