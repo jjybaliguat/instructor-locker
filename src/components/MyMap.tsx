@@ -8,6 +8,12 @@ import MyCurrentLocationMarker from './MyCurrentLocationMarker'
 import useSWR from 'swr'
 import { getLatestDevicesCoord } from '@/app/actions'
 
+function sortLogs(logs: any){
+    let newLogs = logs?.map((a: any, b: any)=>b.createdAt - a.createdAt)
+    console.log(logs?.map((a: any, b: any)=>b.createdAt - a.createdAt))
+    return newLogs[0];
+}
+
 const Map = () => {
 
     const {data: devices, isLoading} = useSWR('getLatestCoord', getLatestDevicesCoord)
@@ -51,26 +57,29 @@ const Map = () => {
                 <MyCurrentLocationMarker />
                 <Circle center={[14.7607, 121.1568]} pathOptions={{ fillColor: 'blue' }} radius={200} />
                 
-                {devices?.map((device)=>(
-                    <Marker key={device.id} icon={
-                        new L.Icon({
-                            iconUrl: '/marker-icon.png',
-                            iconRetinaUrl: '/marker-icon.png',
-                            iconSize: [50, 50],
-                            iconAnchor: [20, 20],
-                            popupAnchor: [0, 0],
-                            shadowUrl: '/marker-shadow.png',
-                            shadowSize: [80, 80],
-                        })
-                    } position={[Number(device.locationLogs[0].lat), Number(device.locationLogs[0].lng)]}>
-                         {/* <Popup>
-                            Mini Bus San Isidro Terminal
-                        </Popup> */}
-                        <Tooltip direction="top" offset={[0, -30]} opacity={1}>
-                            Name: Maes {device.deviceName} <br />
-                        </Tooltip>
-                    </Marker>
-                ))}
+                {devices?.map((device)=>{
+                    sortLogs(device.locationLogs)
+                    return (
+                        <Marker key={device.id} icon={
+                            new L.Icon({
+                                iconUrl: '/marker-icon.png',
+                                iconRetinaUrl: '/marker-icon.png',
+                                iconSize: [50, 50],
+                                iconAnchor: [20, 20],
+                                popupAnchor: [0, 0],
+                                shadowUrl: '/marker-shadow.png',
+                                shadowSize: [80, 80],
+                            })
+                        } position={[Number(device.locationLogs[0].lat), Number(device.locationLogs[0].lng)]}>
+                             {/* <Popup>
+                                Mini Bus San Isidro Terminal
+                            </Popup> */}
+                            <Tooltip direction="top" offset={[0, -30]} opacity={1}>
+                                Name: Maes {device.deviceName} <br />
+                            </Tooltip>
+                        </Marker>
+                    )
+                })}
                 <Marker icon={
                         new L.Icon({
                             iconUrl: '/terminal-bus.png',

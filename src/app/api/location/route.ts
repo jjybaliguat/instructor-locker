@@ -3,17 +3,17 @@ import { NextRequest, NextResponse } from "next/server";
 
 const prisma = new PrismaClient()
 
-export async function GET(){
-    try {
-        const response = await prisma.locationLogs.findMany({});
-        return NextResponse.json(response, {status: 200})
-    } catch (error) {
-        console.log(error);
-        return NextResponse.json({message: "Internal Server Error: " + error});
-    }
-}
+// export async function GET(){
+//     try {
+//         const response = await prisma.locationLogs.findMany({});
+//         return NextResponse.json(response, {status: 200})
+//     } catch (error) {
+//         console.log(error);
+//         return NextResponse.json({message: "Internal Server Error: " + error});
+//     }
+// }
 
-export async function POST(req: NextRequest){
+export async function GET(req: NextRequest){
     const url = new URL(req.url)
     const searchParams = new URLSearchParams(url.search)
     const deviceId = searchParams.get("deviceId") as string;

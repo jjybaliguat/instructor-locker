@@ -22,12 +22,13 @@ export async function getLatestDevicesCoord(){
     try {
         const response = await prisma.device.findMany({
             where: {
-                parentIdentifier: 'maes-device'
+                parentIdentifier: 'maes-device',
             },
             include: {
-                locationLogs: true
+                locationLogs: true,
             }
         })
+        console.log(response)
         return response
     } catch (error) {
         console.log(error)
