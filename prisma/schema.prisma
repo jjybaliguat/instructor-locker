@@ -86,7 +86,7 @@ model Device {
 
 model LocationLogs {
   id      String   @id @default(auto()) @map("_id") @db.ObjectId
-  long    String
+  lng    String
   lat     String
   deviceId String @db.ObjectId
   device  Device @relation(fields: [deviceId], references: [id])

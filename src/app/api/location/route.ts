@@ -18,19 +18,19 @@ export async function POST(req: NextRequest){
     const searchParams = new URLSearchParams(url.search)
     const deviceId = searchParams.get("deviceId") as string;
     const lat = searchParams.get("lat") as string;
-    const long = searchParams.get("long") as string;
+    const lng = searchParams.get("lng") as string;
 
     try {
         const response = await prisma.locationLogs.create({
             data: {
                 deviceId: deviceId,
                 lat: lat,
-                long: long,
+                lng: lng,
             }
         })
+        console.log(response);
         return NextResponse.json(response, {status: 201})
     } catch (error) {
         console.log(error)
     }
-    return NextResponse.json("ok", {status: 200})
 }
