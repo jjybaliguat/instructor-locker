@@ -62,7 +62,7 @@ const Map = () => {
                             shadowUrl: '/marker-shadow.png',
                             shadowSize: [80, 80],
                         })
-                    } position={[Number(device.locationLogs[0].lat), Number(device.locationLogs[0].long)]}>
+                    } position={[Number(device.locationLogs[0].lat), Number(device.locationLogs[0].lng)]}>
                          {/* <Popup>
                             Mini Bus San Isidro Terminal
                         </Popup> */}
