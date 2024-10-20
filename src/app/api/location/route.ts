@@ -13,7 +13,7 @@ const prisma = new PrismaClient()
 //     }
 // }
 
-export async function GET(req: NextRequest){
+export async function POST(req: NextRequest){
     const url = new URL(req.url)
     const searchParams = new URLSearchParams(url.search)
     const deviceId = searchParams.get("deviceId") as string;
