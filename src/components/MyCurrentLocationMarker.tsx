@@ -42,7 +42,7 @@ const MyCurrentLocationMarker = () => {
 
     return myCoord === null ? null : (
         <>
-            <Circle center={myCoord} pathOptions={{ fillColor: 'blue' }} radius={70} />
+            <Circle className='animate-ping' center={myCoord} pathOptions={{ fillColor: 'blue' }} radius={70} />
             <Marker
             icon={
                 L.divIcon({
