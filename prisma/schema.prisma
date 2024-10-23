@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                 String   @id @default(auto()) @db.ObjectId @map("_id")  // Use auto-generated MongoDB ObjectId
+  userId             String   @db.ObjectId// Reference to User
+  provider           String   // OAuth provider (e.g., "google")
+  providerAccountId  String   // Unique identifier from the provider
+  refresh_token      String?  // Optional refresh token
+  access_token       String?  // Optional access token
+  expires_at         Int?     // Optional expiration timestamp
+  token_type         String?  // Optional token type
+  type                String?
+  scope              String?  // Optional scope
+  id_token           String?  // Optional ID token
+  session_state      String?  // Optional session state
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])  // Composite unique constraint
+}
+
+model Session {
+  id           String   @id @default(auto()) @db.ObjectId @map("_id")  // Use auto-generated MongoDB ObjectId
+  sessionToken String   @unique  // Unique session token
+  userId       String   @db.ObjectId   // Reference to User
+  expires      DateTime // Session expiration time
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifier String
+  token      String
+  expires    DateTime
+ 
+  @@unique([identifier, token])
+}
+
+model User {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  name          String?
+  email         String?  @unique
+  emailVerified DateTime?
+  image         String?
+  device  DeviceParent?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  accounts      Account[]
+  sessions      Session[]
+}
+
+model DeviceParent {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifier  String @unique
+  userId  String? @db.ObjectId @unique
+  owner User? @relation(fields: [userId], references: [id])
+  devices Device[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Device {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  deviceName  String
+  description String
+  parentIdentifier String
+  parent DeviceParent? @relation(fields: [parentIdentifier], references: [identifier])
+  locationLogs LocationLogs[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LocationLogs {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  lng    String
+  lat     String
+  deviceId String @db.ObjectId
+  device  Device @relation(fields: [deviceId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
