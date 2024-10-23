@@ -21,10 +21,6 @@
       "@/*": ["./src/*"]
     }
   },
-<<<<<<< HEAD
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/api/auth/[...nextauth]/route.js", "src/lib/authConfig.js", "src/utils/firebase.js", "src/utils/firebase.js"],
-=======
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/api/auth/[...nextauth]/route.js", "src/lib/authConfig.js"],
->>>>>>> 5b068729854c6c02fd4c6f2097e4754624e92996
   "exclude": ["node_modules"]
 }

@@ -9,10 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-<<<<<<< HEAD
     "@auth/firebase-adapter": "^2.7.2",
-=======
->>>>>>> 5b068729854c6c02fd4c6f2097e4754624e92996
     "@auth/prisma-adapter": "^2.7.0",
     "@prisma/client": "^5.20.0",
     "@radix-ui/react-accordion": "^1.1.2",
@@ -37,11 +34,8 @@
     "@tanstack/react-table": "^8.10.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-<<<<<<< HEAD
     "firebase": "^11.0.1",
     "firebase-admin": "^12.6.0",
-=======
->>>>>>> 5b068729854c6c02fd4c6f2097e4754624e92996
     "lucide-react": "^0.452.0",
     "next": "14.2.15",
     "next-auth": "^4.24.8",
@@ -49,10 +43,7 @@
     "nextjs-toploader": "^3.7.15",
     "react": "^18",
     "react-dom": "^18",
-<<<<<<< HEAD
     "react-firebase-hooks": "^5.1.1",
-=======
->>>>>>> 5b068729854c6c02fd4c6f2097e4754624e92996
     "react-hook-form": "^7.53.0",
     "react-leaflet": "^4.2.1",
     "recharts": "^2.13.0",
@@ -62,10 +53,7 @@
     "zustand": "^5.0.0-rc.2"
   },
   "devDependencies": {
-<<<<<<< HEAD
     "@types/firebase": "^2.4.32",
-=======
->>>>>>> 5b068729854c6c02fd4c6f2097e4754624e92996
     "@types/leaflet": "^1.9.12",
     "@types/node": "^20",
     "@types/react": "^18",

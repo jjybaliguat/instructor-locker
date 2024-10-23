@@ -15,7 +15,6 @@ import useSWR from "swr"
 const MyMap = dynamic(() => import('@/components/MyMap'), {
   ssr: false, // Disable server-side rendering
 });
-<<<<<<< HEAD
 import React, { useEffect, useState } from 'react'
 import { BusIcon } from 'lucide-react';
 import { Heading } from '@/components/ui/heading';
@@ -25,15 +24,6 @@ import { database, onValue, ref } from '@/utils/firebase';
 function Home() {
   const {data: totalDevice, isLoading} = useSWR("getTotalDevice", getTotalDevice)
 
-=======
-import React from 'react'
-import { BusIcon } from 'lucide-react';
-import { Heading } from '@/components/ui/heading';
-import { getTotalDevice } from '../actions';
-
-function Home() {
-  const {data: totalDevice, isLoading} = useSWR("getTotalDevice", getTotalDevice)
->>>>>>> 5b068729854c6c02fd4c6f2097e4754624e92996
   return (
     <PageContainer>
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

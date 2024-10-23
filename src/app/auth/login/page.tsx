@@ -10,13 +10,8 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import Image from "next/image";
-<<<<<<< HEAD
 export default function LoginPage() {
   
-=======
-
-export default function LoginPage() {
->>>>>>> 5b068729854c6c02fd4c6f2097e4754624e92996
   return (
     <>
     <div className="flex w-full h-screen items-center justify-center">
@@ -34,7 +29,6 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent>
           <div className="mt-6 flex justify-end">
-<<<<<<< HEAD
             <Button onClick={async()=>{
               try {
                 const response = await signIn('google')
@@ -43,9 +37,6 @@ export default function LoginPage() {
                 console.log(error)
               }
             }}>Continue with Google</Button>
-=======
-            <Button onClick={async()=>await signIn('google')}>Continue with Google</Button>
->>>>>>> 5b068729854c6c02fd4c6f2097e4754624e92996
           </div>
         </CardContent>
         {/* <CardFooter className="flex justify-between">
