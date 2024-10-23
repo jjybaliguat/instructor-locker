@@ -17,13 +17,15 @@ function sortLogs(logs: any){
 
 const Map = () => {
 
-    const {data: devices, isLoading} = useSWR('getLatestCoord', getLatestDevicesCoord)
+    // const {data: devices, isLoading} = useSWR('getLatestCoord', getLatestDevicesCoord)
     const [coord, setCoord] = useState<[number, number]>([14.6810331, 121.1123889])
 
     const [gpsData, setGpsData] = useState({
         latitude: 0,
         longitude: 0
       })
+
+    //   console.log(gpsData)
     
         useEffect(()=>{
           const latRef = ref(database, 'gpsData');

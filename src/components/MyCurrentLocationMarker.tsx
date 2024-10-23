@@ -21,6 +21,7 @@ const MyCurrentLocationMarker = () => {
           (position) => {
             const { latitude, longitude } = position.coords;
             setMyCoord([latitude, longitude]);
+            // console.log(position.coords)
           },
           (error) => {
             console.error(error);
