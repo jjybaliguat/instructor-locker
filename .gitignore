@@ -35,7 +35,3 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-<<<<<<< HEAD
-service-accounts.json
-=======
->>>>>>> 5b068729854c6c02fd4c6f2097e4754624e92996
