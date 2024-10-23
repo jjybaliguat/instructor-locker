@@ -1,13 +1,19 @@
 // @ts-nocheck
 import GoogleProvider from "next-auth/providers/google";
+<<<<<<< HEAD
 // import { PrismaAdapter } from "@auth/prisma-adapter"
 import { PrismaClient } from "@prisma/client";
 import { FirestoreAdapter } from "@auth/firebase-adapter"
 import { cert } from "firebase-admin/app"
+=======
+import { PrismaAdapter } from "@auth/prisma-adapter"
+import { PrismaClient } from "@prisma/client";
+>>>>>>> 5b068729854c6c02fd4c6f2097e4754624e92996
 
 const prisma = new PrismaClient()
 
 export const options = {
+<<<<<<< HEAD
   // adapter: PrismaAdapter(prisma),
   adapter: FirestoreAdapter({
     credential: cert({
@@ -16,6 +22,9 @@ export const options = {
       privateKey: process.env.AUTH_FIREBASE_PRIVATE_KEY,
     }),
   }),
+=======
+  adapter: PrismaAdapter(prisma),
+>>>>>>> 5b068729854c6c02fd4c6f2097e4754624e92996
   providers: [
     GoogleProvider({
         clientId: process.env.GOOGLE_CLIENT_ID,
