@@ -71,7 +71,7 @@ const Map = () => {
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
                 <MyCurrentLocationMarker />
-                <Circle className='animate-ping' center={[14.7607, 121.1568]} pathOptions={{ fillColor: 'blue' }} radius={200} />
+                <Circle className='animate-pulse' center={[14.7607, 121.1568]} pathOptions={{ fillColor: 'blue' }} radius={200} />
                 <Marker icon={
                     new L.Icon({
                         iconUrl: '/marker-icon.png',
