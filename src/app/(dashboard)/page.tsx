@@ -22,23 +22,6 @@ import { getTotalDevice } from '../actions';
 import { database, onValue, ref } from '@/utils/firebase';
 
 function Home() {
-  // const {data: totalDevice, isLoading} = useSWR("getTotalDevice", getTotalDevice)
-
-//   const [gpsData, setGpsData] = useState({
-//     latitude: 0,
-//     longitude: 0
-//   })
-
-// //   console.log(gpsData)
-
-//     useEffect(()=>{
-//       const latRef = ref(database, 'gpsData');
-//       onValue(latRef, (snapshot: { val: () => any; }) => {
-//         const data = snapshot.val();
-//         console.log(data)
-//         setGpsData(data)
-//       });
-//     }, [])
 
   return (
     <PageContainer>

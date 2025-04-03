@@ -8,6 +8,11 @@ import MyCurrentLocationMarker from './MyCurrentLocationMarker'
 import useSWR from 'swr'
 import { getLatestDevicesCoord } from '@/app/actions'
 import { database, onValue, ref } from '@/utils/firebase'
+import mqtt from "mqtt";
+
+const MQTT_BROKER_URL = "wss://test.mosquitto.org:8081"; // Use ws:// for unsecured, wss:// for secure
+const MQTT_TOPIC = "gps/data";
+
 
 function sortLogs(logs: any){
     let newLogs = logs?.map((a: any, b: any)=>b.createdAt - a.createdAt)
@@ -16,24 +21,56 @@ function sortLogs(logs: any){
 }
 
 const Map = () => {
+    const [message, setMessage] = useState<string | null>(null);
 
+    useEffect(() => {
+        const client = mqtt.connect(MQTT_BROKER_URL, {
+          clientId: `nextjs-client-1`,
+        });
+    
+        client.on("connect", () => {
+          console.log("Connected to MQTT broker");
+          client.subscribe(MQTT_TOPIC, (err) => {
+            if (!err) {
+              console.log(`Subscribed to ${MQTT_TOPIC}`);
+            } else {
+              console.error("Subscription error:", err);
+            }
+          });
+        });
+    
+        client.on("message", (topic, payload) => {
+          if (topic === MQTT_TOPIC) {
+            setMessage(payload.toString())
+            const data = JSON.parse(payload.toString());
+            if (data.lat && data.lon) {
+            setGpsData({ lat: data.lat, lon: data.lon });
+            }
+          }
+        });
+    
+        return () => {
+          client.end();
+        };
+      }, []);
+      
     // const {data: devices, isLoading} = useSWR('getLatestCoord', getLatestDevicesCoord)
     const [coord, setCoord] = useState<[number, number]>([14.6810331, 121.1123889])
 
     const [gpsData, setGpsData] = useState({
-        latitude: 0,
-        longitude: 0
+        lat: 0,
+        lon: 0
       })
 
     //   console.log(gpsData)
     
-        useEffect(()=>{
-          const latRef = ref(database, 'gpsData');
-          onValue(latRef, (snapshot: { val: () => any; }) => {
-            const data = snapshot.val();
-            setGpsData(data)
-          });
-        }, [])
+        // useEffect(()=>{
+        //   const latRef = ref(database, 'gpsData');
+        //   onValue(latRef, (snapshot: { val: () => any; }) => {
+        //     const data = snapshot.val();
+        //     setGpsData(data)
+        //   });
+        // }, [])
 
     useEffect(() => {
         // Function to update coordinates
@@ -62,6 +99,10 @@ const Map = () => {
 
     return (
         <div className='w-full h-[600px] z-40'>
+            <div className="p-4">
+            <h2>MQTT Message:</h2>
+            <p>{message || "Waiting for messages..."}</p>
+            </div>
             <MapContainer style={{
                 height: '100%',
                 width: '100%'
@@ -82,7 +123,10 @@ const Map = () => {
                         shadowUrl: '/marker-shadow.png',
                         shadowSize: [80, 80],
                     })
-                } position={[gpsData.latitude, gpsData.longitude]}>
+                } 
+                // position={[gpsData.latitude, gpsData.longitude]}
+                position={[gpsData.lat, gpsData.lon]}
+                >
                      {/* <Popup>
                         Mini Bus San Isidro Terminal
                     </Popup> */}
