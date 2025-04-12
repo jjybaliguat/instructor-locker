@@ -11,7 +11,7 @@ import { database, onValue, ref } from '@/utils/firebase'
 import mqtt from "mqtt";
 
 const MQTT_BROKER_URL = "wss://test.mosquitto.org:8081"; // Use ws:// for unsecured, wss:// for secure
-const MQTT_TOPIC = "gps/data";
+const MQTT_TOPIC = "gps/data1";
 
 
 function sortLogs(logs: any){
@@ -41,10 +41,17 @@ const Map = () => {
     
         client.on("message", (topic, payload) => {
           if (topic === MQTT_TOPIC) {
-            setMessage(payload.toString())
-            const data = JSON.parse(payload.toString());
-            if (data.lat && data.lon) {
-            setGpsData({ lat: data.lat, lon: data.lon });
+            const msg = payload?.toString();
+            console.log("Received message:", msg);
+            setMessage(msg);
+        
+            try {
+              const data = JSON.parse(msg);
+              if (data.lat && data.lon) {
+                setGpsData({ lat: data.lat, lon: data.lon });
+              }
+            } catch (e) {
+              console.error("Invalid JSON received:", msg);
             }
           }
         });

@@ -25,12 +25,12 @@ export async function middleware(req: NextRequest) {
 
   if (isAuthenticated && req.nextUrl.pathname === loginPath) {
     // If user is authenticated and tries to access the login page, redirect to dashboard or home
-    return NextResponse.redirect(new URL("/", req.url));  // Change this to your desired route
+    return NextResponse.redirect(new URL("/dashboard", req.url));  // Change this to your desired route
   }
 
   return NextResponse.next();  // Proceed to the requested page if no redirects are necessary
 }
 
 export const config = {
-  matcher: ["/:path*", "/profile/:path*", "/auth/login"],  // Apply middleware to specific routes
+  matcher: ["/dashboard/:path*", "/profile/:path*", "/auth/login"],  // Apply middleware to specific routes
 };
