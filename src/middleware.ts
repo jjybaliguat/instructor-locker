@@ -11,14 +11,17 @@ export async function middleware(req: NextRequest) {
   const token = await getToken({ req, secret });
 
   // Define the paths you want to protect or redirect
-  const protectedPaths = ["/"];  // Example protected paths
+  const protectedPaths = ["/dashboard"];  // Example protected paths
   const loginPath = "/auth/login";  // Login page
 
   // Check if the user is authenticated
   const isAuthenticated = !!token;
+  const pathname = req.nextUrl.pathname;
 
   // Redirect logic
-  if (protectedPaths.includes(req.nextUrl.pathname) && !isAuthenticated) {
+  const isProtected = protectedPaths.some((path) => pathname.startsWith(path));
+
+  if (isProtected && !isAuthenticated) {
     // If user is not authenticated and trying to access a protected route, redirect to login
     return NextResponse.redirect(new URL(loginPath, req.url));
   }

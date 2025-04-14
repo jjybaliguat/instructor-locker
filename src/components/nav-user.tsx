@@ -31,6 +31,7 @@ import { CaretSortIcon, ComponentPlaceholderIcon } from "@radix-ui/react-icons"
 import { Switch } from "./ui/switch"
 import { Label } from "./ui/label"
 import { useTheme } from "next-themes"
+import { signOut } from "next-auth/react"
 
 export function NavUser({
   user,
@@ -112,7 +113,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={()=>signOut()}>
               <LogOut />
               Log out
             </DropdownMenuItem>

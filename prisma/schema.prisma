@@ -57,6 +57,7 @@ model User {
   emailVerified DateTime?
   image         String?
   device  DeviceParent?
+  semaphoreKey String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   accounts      Account[]

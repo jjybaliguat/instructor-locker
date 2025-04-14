@@ -19,30 +19,28 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-export function SmsIntegrationForm() {
+export function SemaphoreAccountCard() {
   return (
     <Card className="w-[350px]">
       <CardHeader>
-        <CardTitle>SMS Integration</CardTitle>
-        <CardDescription>Connect your sms gateway to enable sms notification alerts.</CardDescription>
+        <CardTitle>Semaphore Account</CardTitle>
+        <CardDescription></CardDescription>
       </CardHeader>
       <CardContent>
-        <form>
           <div className="grid w-full items-center gap-4">
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="name">Semaphore Api Key</Label>
-              <Input id="name" placeholder="api key" />
+              <Label htmlFor="name">Account Name</Label>
+              <Input value="" readOnly />
+            </div>
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="name">Status</Label>
+              <Input value="" readOnly />
+            </div>
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="name">Credit Balance</Label>
+              <Input value="" readOnly />
             </div>
           </div>
-          <div className="flex justify-end mt-5">
-            <Button type="submit">Save</Button>
-          </div>
-        </form>
-        <CardFooter>
-          <div>
-            <Button type="button" variant="outline">Test Connection</Button>
-          </div>
-        </CardFooter>
       </CardContent>
     </Card>
   )
