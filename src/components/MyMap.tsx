@@ -105,15 +105,15 @@ const Map = () => {
     }
 
     return (
-        <div className='w-full h-[600px] z-40'>
+        <div className='w-full h-[600px]'>
             <div className="p-4">
-            <h2>MQTT Message:</h2>
-            <p>{message || "Waiting for messages..."}</p>
+            <h1 className='text-xl'>Mini-Buses&apos; Real-Time Locations</h1>
             </div>
             <MapContainer style={{
                 height: '100%',
                 width: '100%'
-            }} center={coord} zoom={13} scrollWheelZoom={false}>
+            }} center={coord} zoom={13} scrollWheelZoom={false}
+            >
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
