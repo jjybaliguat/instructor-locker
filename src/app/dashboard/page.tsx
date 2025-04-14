@@ -1,5 +1,10 @@
-import Map from '@/components/MyMap'
 import React from 'react'
+import dynamic from 'next/dynamic'
+
+const Map = dynamic(() => import('@/components/MyMap'), {
+  ssr: false, // disable server-side rendering
+  loading: () => <p>Loading map...</p>, // optional: loading fallback
+})
 
 const Dashboard = () => {
   return (
