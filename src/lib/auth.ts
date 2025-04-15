@@ -1,14 +1,17 @@
 // @ts-nocheck
 import GoogleProvider from "next-auth/providers/google";
-// import { PrismaAdapter } from "@auth/prisma-adapter"
+import CredentialsProvider from "next-auth/providers/credentials"
+import { PrismaAdapter } from "@auth/prisma-adapter"
 import { PrismaClient } from "@prisma/client";
 import { FirestoreAdapter } from "@auth/firebase-adapter"
+import { hashPassword } from "@/utils/hashPassword"
 import { cert } from "firebase-admin/app"
+import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
 export const options = {
-  // adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma),
   adapter: FirestoreAdapter({
     credential: cert({
       projectId: process.env.AUTH_FIREBASE_PROJECT_ID,
@@ -20,14 +23,52 @@ export const options = {
     GoogleProvider({
         clientId: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET
-      })
+      }),
+      CredentialsProvider({
+        name: "Credentials",
+        credentials: {
+            email: {},
+            password:{},
+        },
+        async authorize(credentials) {
+            try {
+              // console.log(credentials)
+                if(!credentials?.email || !credentials.password){
+                  return null
+                }
+                const user = await prisma.user.findUnique({
+                  where: {
+                    email: credentials.email
+                  }
+                });
+                if (!user) {
+                    throw new Error("")
+                }
+                const isValidPassword = await bcrypt.compare(
+                    credentials?.password ?? "", user.password as string
+                ); 
+                if (!isValidPassword) {
+                  throw new Error("Invalid Credentials")
+                }
+                return user;
+            }
+            catch {
+                return null
+            }
+        }
+    })
   ],
   // database: process.env.DATABASE_URL,
   session: {
     strategy: "jwt",
   },
+  session: {
+    strategy: "jwt", // Use JWT for session storage
+    maxAge: 60*60, // 1hr expiration if inactive
+    updateAge: 15*60, // update every 15mins
+  },
   pages: {
-    signIn: '/auth/login',
+    signIn: '/auth/sign-in',
   },
   callbacks: {
     /**
@@ -37,6 +78,20 @@ export const options = {
     async signIn({ account, profile }) {
       if (account?.provider === 'google') {
         if (profile?.email_verified) {
+          const existingUser = await prisma.user.findUnique({
+            where: {
+              email: profile.email
+            }
+          })
+          if(!existingUser){
+            await prisma.user.create({
+              data: {
+                name: profile.name,
+                email: profile.email,
+                image: profile.picture,
+              }
+            })
+          }
           return true;  // Allow sign-in
         } else {
           return '/auth/error?error=EmailNotVerified';  // Redirect if email is not verified
@@ -83,12 +138,13 @@ export const options = {
      * Called during account creation.
      * You can add logic here to modify the user record in the database.
      */
-    async createUser({ user }) {
-      // You can perform actions here when a new user is created.
-      // For example, log user creation or assign custom roles
-      console.log(`User created: ${user.name}`);
-      return user;
-    },
+    // async createUser({ user }) {
+    //   // You can perform actions here when a new user is created.
+    //   // For example, log user creation or assign custom roles
+    //   console.log(`User created: ${user.name}`);
+    //   return user;
+    // },
   },
   secret: process.env.NEXTAUTH_SECRET,
+  debug: process.env.NODE_ENV === "development"
 };

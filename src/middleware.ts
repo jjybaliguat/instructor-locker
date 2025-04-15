@@ -12,7 +12,7 @@ export async function middleware(req: NextRequest) {
 
   // Define the paths you want to protect or redirect
   const protectedPaths = ["/dashboard"];  // Example protected paths
-  const loginPath = "/auth/login";  // Login page
+  const loginPath = "/auth/sign-in";  // Login page
 
   // Check if the user is authenticated
   const isAuthenticated = !!token;
@@ -35,5 +35,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/profile/:path*", "/auth/login"],  // Apply middleware to specific routes
+  matcher: ["/dashboard/:path*", "/profile/:path*", "/auth/sign-in"],  // Apply middleware to specific routes
 };

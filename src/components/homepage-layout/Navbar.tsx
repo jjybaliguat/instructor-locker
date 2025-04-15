@@ -70,7 +70,7 @@ export function NavBar({ className, initial, before, after }: { className: strin
             </div>
             <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
-                    <Link href="/auth/login"><Button>Sign In</Button></Link>
+                    <Link href="/auth/sign-in"><Button>Sign In</Button></Link>
                     <Avatar className="text-black">
                         <AvatarImage src={session?.user?.image as string} alt="userimg" />
                         {/* <AvatarFallback>{session?.user?.email?.split("")[0]}</AvatarFallback> */}
