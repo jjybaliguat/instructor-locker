@@ -6,7 +6,6 @@ import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Circle, Tooltip }
 import { useEffect, useState } from 'react'
 import MyCurrentLocationMarker from './MyCurrentLocationMarker'
 import useSWR from 'swr'
-import { getLatestDevicesCoord } from '@/app/actions'
 import { database, onValue, ref } from '@/utils/firebase'
 import mqtt from "mqtt";
 
