@@ -75,7 +75,7 @@ export const options = {
      * Controls if the user is allowed to sign in.
      * In this example, the user must have a verified email with Google.
      */
-    async signIn({ account, profile }) {
+    async signIn({ account, profile, user }) {
       if (account?.provider === 'google') {
         if (profile?.email_verified) {
           const existingUser = await prisma.user.findUnique({
@@ -84,7 +84,7 @@ export const options = {
             }
           })
           if(!existingUser){
-            await prisma.user.create({
+            const user = await prisma.user.create({
               data: {
                 name: profile.name,
                 email: profile.email,
@@ -92,7 +92,7 @@ export const options = {
               }
             })
           }
-          return true;  // Allow sign-in
+          return true
         } else {
           return '/auth/error?error=EmailNotVerified';  // Redirect if email is not verified
         }
@@ -104,22 +104,43 @@ export const options = {
      * Called when the JWT is created or updated.
      * You can add custom fields to the JWT token here.
      */
-    async jwt({ token, account, user }) {
+    async jwt({ token, account, user, trigger, session }) {
       // Persist the OAuth account and token details in the JWT
-      if (account) {
-        token.accessToken = account.access_token;
-        token.refreshToken = account.refresh_token;
-        token.idToken = account.id_token;
-        token.provider = account.provider;
+      if (user) {
+        const dbUser = await prisma.user.findUnique({
+          where: {
+            email: user.email
+          },
+          include: {
+            semaphoreKey: true
+          }
+        })
+
+        token.id = dbUser.id;
+        token.name = dbUser.name;
+        token.email = dbUser.email;
+        token.image = dbUser.image
+        token.role = dbUser.role;
+        token.semaphoreKey = dbUser?.semaphoreKey;
+        token.companyName = dbUser.companyName;
+        token.companyAddress = dbUser.companyAddress;
       }
 
-      // Store the user ID from the database
-      if (user) {
-        token.id = user.id;
+      // ---> ADDITION <---
+      if (trigger == "update") {
+        if (session?.user?.name && session?.user?.email) {
+          token.email = session.user.email,
+          token.name = session.user.name
+          token.companyName = session.user.companyName
+          token.companyAddress = session.user.companyAddress
+          token.semaphoreKey = session.user.semaphoreKey
+        }
       }
+      
 
       return token;
     },
+    
 
     /**
      * Called when the session is checked (e.g. `useSession` or `getSession`).
@@ -127,8 +148,14 @@ export const options = {
      */
     async session({ session, token }) {
       if (token) {
-        session.user.id = token.id;  // Attach user ID to session
-        session.accessToken = token.accessToken;
+        session.user.id = token.id;
+        session.user.name = token.name;
+        session.user.email = token.email;
+        session.user.image = token.image;
+        session.user.role = token.role;
+        session.user.semaphoreKey = token.semaphoreKey;
+        session.user.companyName = token.companyName;
+        session.user.companyAddress = token.companyAddress;
       }
 
       return session;

@@ -58,7 +58,7 @@ model User {
   role      Role     @default(USER)
   emailVerified DateTime?
   image         String?
-  semaphoreKey String?
+  semaphoreKey SemaphoreKey?
   minibuses MiniBus[]
   companyName String?
   companyAddress  String?
@@ -66,6 +66,15 @@ model User {
   updatedAt DateTime @updatedAt
   accounts      Account[]
   sessions      Session[]
+}
+
+model SemaphoreKey {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId  String @db.ObjectId @unique
+  user    User @relation(fields: [userId], references: [id])
+  key     String @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum Role {

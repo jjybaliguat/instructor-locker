@@ -8,12 +8,14 @@ import {
 } from "@/components/ui/sidebar"
 import NextTopLoader from "nextjs-toploader"
 import { ReactNode } from "react"
+import { Toaster } from "sonner"
 
 export default function Layout({children}:{children: ReactNode}) {
   return (
     <>
     <NextTopLoader showSpinner={false} />
     <SidebarProvider>
+      <Toaster position="top-center" />
       <AppSidebar />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">

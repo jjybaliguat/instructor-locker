@@ -1,3 +1,5 @@
+"use client"
+
 import * as React from "react"
 
 import { Button } from "@/components/ui/button"
@@ -11,15 +13,50 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { useSession } from "next-auth/react"
+import { toast } from 'sonner'
+import { useRouter } from "next/navigation"
 
 export function SmsIntegrationForm() {
+  const [pending, setPending] = React.useState(false)
+  const {data: session, update} = useSession()
+  const [apiKey, setApiKey] = React.useState(session?.user?.semaphoreKey?.key)
+  const [isReadOnly, setIsReadonly] = React.useState(false)
+  const [emptyApiKey, setEmptyApiKey] = React.useState(true)
+  const router = useRouter()
+
+  React.useEffect(()=>{
+    setApiKey(session?.user.semaphoreKey?.key)
+    setIsReadonly(Boolean(session?.user?.semaphoreKey?.key ?? ""))
+    setEmptyApiKey(!Boolean(session?.user?.semaphoreKey?.key ?? ""))
+  }, [session])
+
+  const handleSubmit = async(e: React.FormEvent) => {
+    e.preventDefault()
+    setPending(true)
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/semaphore-key?id=${session?.user?.id}`, {
+        method: "POST",
+        body: JSON.stringify({key: apiKey})
+      })
+      const data = await response.json()
+      update({
+        user: {
+          ...session?.user,
+          semaphoreKey: data
+        }
+      })
+      toast.error("ApiKey Updated", {
+        duration: 3000
+      })
+      setPending(false)
+      router.refresh()
+    } catch (error) {
+      console.log(error)
+      setPending(false)
+    }
+  }
+
   return (
     <Card className="w-[350px]">
       <CardHeader>
@@ -27,21 +64,42 @@ export function SmsIntegrationForm() {
         <CardDescription>Connect your sms gateway to enable sms notification alerts.</CardDescription>
       </CardHeader>
       <CardContent>
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="grid w-full items-center gap-4">
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="name">Semaphore Api Key</Label>
-              <Input id="name" placeholder="api key" />
+              <Input id="name" placeholder="enter api key"
+              value={apiKey}
+              type={isReadOnly ? "password" : "text"}
+              onChange={(e)=>setApiKey(e.target.value)}
+              required
+              readOnly={isReadOnly}
+              autoComplete="new-password"
+              autoCorrect="off"
+              spellCheck={false}
+              />
             </div>
           </div>
           <div className="flex justify-end mt-5">
-            <Button type="submit">Save</Button>
+            {!isReadOnly && 
+              <div className="flex items-center gap-2">
+              {!emptyApiKey && <Button type="button" variant="outline"
+              onClick={()=>{setIsReadonly(true); setApiKey(session?.user.semaphoreKey?.key)}}
+              >Cancel</Button>}
+              <Button type="submit" disabled={pending}>{pending? "Saving..." : "Save"}</Button>
+            </div>
+            }
+            {isReadOnly && 
+                <Button type="button"
+                onClick={()=>{setIsReadonly(false); setApiKey("")}}
+                >Change</Button>
+            }
           </div>
         </form>
-        <CardFooter>
-          <div>
+        <CardFooter className="mt-4">
+          {/* <div>
             <Button type="button" variant="outline">Test Connection</Button>
-          </div>
+          </div> */}
         </CardFooter>
       </CardContent>
     </Card>

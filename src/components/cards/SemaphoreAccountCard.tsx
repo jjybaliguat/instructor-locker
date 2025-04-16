@@ -1,3 +1,4 @@
+"use client"
 import * as React from "react"
 
 import { Button } from "@/components/ui/button"
@@ -11,17 +12,26 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import useSWR from "swr"
+import { useSession } from "next-auth/react"
 
 export function SemaphoreAccountCard() {
+  const {data: session} = useSession()
+  const userId = session?.user.id
+  const {data: semaphoreAccount, isLoading} = useSWR(userId? "getSemaphoreAccount" : null, GetSemaphoreAccount)
+
+  async function GetSemaphoreAccount() {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/semaphore?key=${session?.user.semaphoreKey?.key}`)
+      const data = await response.json()
+      console.log(data)
+      return data
+    } catch (error) {
+      console.log(error)
+    }
+  }
   return (
-    <Card className="w-[350px]">
+    <Card className="w-[350px] h-full">
       <CardHeader>
         <CardTitle>Semaphore Account</CardTitle>
         <CardDescription></CardDescription>
