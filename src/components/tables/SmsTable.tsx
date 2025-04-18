@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+import { ArrowUpDown, ChevronDown, MoreHorizontal, TriangleAlert } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -36,56 +36,14 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
+import useSWR, { mutate } from "swr"
+import { getMessages } from "@/app/actions"
+import { useSession } from "next-auth/react"
+import { useSemaphoreAccountStore } from "@/lib/store/semaphore"
+import { Alert } from "../ui/alert"
 
-const data: Payment[] = [
-  {
-    id: "m5gr84i9",
-    recipient: "00000000000",
-    status: "Sent",
-    message: "Sample Message",
-    sender_name: "MiniBus",
-    network: "TM",
-    type: "single"
-  },
-  {
-    id: "3u1reuv4",
-    recipient: "00000000000",
-    status: "Sent",
-    message: "Sample Message",
-    sender_name: "MiniBus",
-    network: "TM",
-    type: "single"
-  },
-  {
-    id: "derv1ws0",
-    recipient: "00000000000",
-    status: "Sent",
-    message: "Sample Message",
-    sender_name: "MiniBus",
-    network: "TM",
-    type: "single"
-  },
-  {
-    id: "5kma53ae",
-    recipient: "00000000000",
-    status: "Sent",
-    message: "Sample Message",
-    sender_name: "MiniBus",
-    network: "TM",
-    type: "single"
-  },
-  {
-    id: "bhqecj4p",
-    recipient: "00000000000",
-    status: "Sent",
-    message: "Sample Message",
-    sender_name: "MiniBus",
-    network: "TM",
-    type: "single"
-  },
-]
 
-export type Payment = {
+export type Sms = {
   id: string
   recipient: string,
   status: "Sent" | "Pending" | "Failed" | "Queued" | "Refunded"
@@ -96,7 +54,7 @@ export type Payment = {
   created_at?: string
 }
 
-export const columns: ColumnDef<Payment>[] = [
+export const columns: ColumnDef<Sms>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -203,6 +161,25 @@ export const columns: ColumnDef<Payment>[] = [
 ]
 
 export function SmsTable() {
+  const { account } = useSemaphoreAccountStore()
+  const { data, isLoading } = useSWR("get-messages", GetMessages)
+
+  async function GetMessages(){
+    try {
+      if(!account.key) return null
+      const messages = await getMessages(account.key)
+
+      // console.log(messages)
+      return messages
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  React.useEffect(()=>{
+    mutate('get-messages')
+  }, [account])
+
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -230,8 +207,13 @@ export function SmsTable() {
     },
   })
 
+  if(!data || isLoading){
+    return <div>Loading...</div>
+  }
+
   return (
-    <div className="w-full">
+    <>
+      <div className="w-full">
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter message..."
@@ -343,5 +325,6 @@ export function SmsTable() {
         </div>
       </div>
     </div>
+    </>
   )
 }

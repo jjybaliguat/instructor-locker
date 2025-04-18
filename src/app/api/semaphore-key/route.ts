@@ -1,3 +1,4 @@
+import { encrypt } from "@/utils/secure-key";
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 
@@ -13,6 +14,9 @@ export async function POST(req: Request){
         return NextResponse.json({message: "Missing Required Fileds"}, {status: 400})
     }
     try {
+        console.log("ok")
+        const encryptedKey = encrypt(key)
+        console.log(encryptedKey)
         const user = await prisma.user.findUnique({
             where: {
                 id
@@ -25,7 +29,7 @@ export async function POST(req: Request){
             const apiKey = await prisma.semaphoreKey.create({
                 data: {
                     userId: id,
-                    key
+                    key: encryptedKey
                 }
             })
             return NextResponse.json(apiKey, {status: 201})
@@ -35,7 +39,7 @@ export async function POST(req: Request){
                     id: user.semaphoreKey.id
                 },
                 data: {
-                    key
+                    key: encryptedKey
                 }
             })
             return NextResponse.json(apiKey, {status: 201})

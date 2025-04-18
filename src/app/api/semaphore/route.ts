@@ -1,3 +1,4 @@
+import { decrypt } from "@/utils/secure-key";
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 
@@ -9,9 +10,10 @@ export async function GET(req: Request){
     const params = new URLSearchParams(url.search)
     const key = params.get('key') as string
     try {
-        const account = await fetch(`https://api.semaphore.co/api/v4/account?apikey=${key}`)
+        const decryptedKey = decrypt(key)
+        const response = await fetch(`https://api.semaphore.co/api/v4/account?apikey=${decryptedKey}`)
         
-        console.log(account)
+        const account = await response.json()
         return NextResponse.json(account, {status: 200})
     } catch (error) {
         console.log(error)

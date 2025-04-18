@@ -14,22 +14,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import useSWR from "swr"
 import { useSession } from "next-auth/react"
+import { useSemaphoreAccountStore } from "@/lib/store/semaphore"
 
 export function SemaphoreAccountCard() {
   const {data: session} = useSession()
   const userId = session?.user.id
-  const {data: semaphoreAccount, isLoading} = useSWR(userId? "getSemaphoreAccount" : null, GetSemaphoreAccount)
-
-  async function GetSemaphoreAccount() {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/semaphore?key=${session?.user.semaphoreKey?.key}`)
-      const data = await response.json()
-      console.log(data)
-      return data
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  const { account } = useSemaphoreAccountStore()
+  
   return (
     <Card className="w-[350px] h-full">
       <CardHeader>
@@ -40,15 +31,15 @@ export function SemaphoreAccountCard() {
           <div className="grid w-full items-center gap-4">
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="name">Account Name</Label>
-              <Input value="" readOnly />
+              <Input value={account.account_name} readOnly />
             </div>
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="name">Status</Label>
-              <Input value="" readOnly />
+              <Input value={account.status} readOnly />
             </div>
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="name">Credit Balance</Label>
-              <Input value="" readOnly />
+              <Input value={(account.credit_balance?.toString())} readOnly />
             </div>
           </div>
       </CardContent>

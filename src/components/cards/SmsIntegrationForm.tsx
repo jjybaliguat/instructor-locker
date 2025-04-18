@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label"
 import { useSession } from "next-auth/react"
 import { toast } from 'sonner'
 import { useRouter } from "next/navigation"
+import { useSemaphoreAccountStore } from "@/lib/store/semaphore"
 
 export function SmsIntegrationForm() {
   const [pending, setPending] = React.useState(false)
@@ -23,6 +24,7 @@ export function SmsIntegrationForm() {
   const [apiKey, setApiKey] = React.useState(session?.user?.semaphoreKey?.key)
   const [isReadOnly, setIsReadonly] = React.useState(false)
   const [emptyApiKey, setEmptyApiKey] = React.useState(true)
+  const { setAccount } = useSemaphoreAccountStore()
   const router = useRouter()
 
   React.useEffect(()=>{
@@ -46,11 +48,34 @@ export function SmsIntegrationForm() {
           semaphoreKey: data
         }
       })
-      toast.error("ApiKey Updated", {
-        duration: 3000
-      })
       setPending(false)
-      router.refresh()
+      const res: any = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/semaphore?key=${data?.key}`)
+      const account = await res.json()
+      if(!res.ok){
+        toast.error(account.message, {
+          duration: 3000
+        })
+      }else{
+        if(!account.account_name){
+          setAccount({
+            key: "",
+            account_name: "",
+            status: "",
+            credit_balance: 0
+          })
+          toast.error(account.apikey[0], {
+            duration: 3000
+          })
+        }else{
+          setAccount({
+            key: data.key,
+            ...account
+          })
+          toast.success("SMS ApiKey Updated", {
+            duration: 3000
+          })
+        }
+      }
     } catch (error) {
       console.log(error)
       setPending(false)
