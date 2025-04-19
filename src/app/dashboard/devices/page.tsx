@@ -7,7 +7,7 @@ import React from 'react'
 const DevicesPage = () => {
   return (
     <div className="flex flex-1 flex-col gap-2 p-4 pt-6">
-      <h1 className='text-xl'>Devices</h1>
+      <h1 className="text-2xl font-bold">Devices</h1>
       <MydevicesTable />
     </div>
   )

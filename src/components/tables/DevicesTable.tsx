@@ -36,48 +36,22 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
+import useSWR from "swr"
+import { useSession } from "next-auth/react"
+import { Skeleton } from "../ui/skeleton"
+import mqtt from "mqtt";
 
-const data: Payment[] = [
-  {
-    id: "m5gr84i9",
-    assigned: true,
-    status: "offline",
-    name: "Mini-Bus-device-1",
-  },
-  {
-    id: "3u1reuv4",
-    assigned: true,
-    status: "online",
-    name: "Mini-Bus-device-2",
-  },
-  {
-    id: "derv1ws0",
-    assigned: true,
-    status: "online",
-    name: "Mini-Bus-device-3",
-  },
-  {
-    id: "5kma53ae",
-    assigned: true,
-    status: "offline",
-    name: "Mini-Bus-device-4",
-  },
-  {
-    id: "bhqecj4p",
-    assigned: true,
-    status: "online",
-    name: "Mini-Bus-device-5",
-  },
-]
-
-export type Payment = {
+export type Device = {
   id: string
-  assigned: boolean
-  status: "online" | "offline"
-  name: string
+  name: string,
+  deviceId: string,
+  assignedBus: {
+    plateNumber: string
+  },
+  mqttTopic: string
 }
 
-export const columns: ColumnDef<Payment>[] = [
+export const columns: ColumnDef<Device>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -103,13 +77,79 @@ export const columns: ColumnDef<Payment>[] = [
   {
     accessorKey: "status",
     header: "Status",
-    cell: ({ row }) => (
-      <div className={cn({
+    cell: ({ row }) => {
+      const [status, setStatus] = React.useState("offline")
+      const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+      const clientRef = React.useRef<mqtt.MqttClient | null>(null);
+
+      React.useEffect(() => {
+              const client = mqtt.connect(process.env.NEXT_PUBLIC_MQTT_BROKER_URL || '', {
+                clientId: `nextjs-client-${Math.random().toString(16).slice(2, 8)}`,
+                username: 'nextjs-client',
+                password: 'AdmiN@11235',
+                protocol: 'mqtt', // ensure this is set to plain MQTT
+                port: 1883,
+                reconnectPeriod: 1000, // auto-reconnect every 1s
+              });
+          
+              client.on("connect", () => {
+                console.log("Connected to MQTT broker");
+                client.subscribe(row.getValue("mqttTopic"), (err) => {
+                  if (!err) {
+                    console.log(`Subscribed to ${row.getValue("mqttTopic")}`);
+                  } else {
+                    console.error("Subscription error:", err);
+                  }
+                });
+                startDataTimeout();
+              });
+          
+              client.on("message", (topic, payload) => {
+                if (topic === row.getValue("mqttTopic")) {
+                  setStatus("online")
+                }
+                startDataTimeout();
+              });
+
+              client.on('error', (err) => {
+                console.error('❌ MQTT Error:', err.message);
+              });
+          
+              client.on('close', () => {
+                console.log('🔌 Connection closed');
+                setStatus("offline");
+                clearTimeoutIfExists();
+              });
+          
+              return () => {
+                client.end();
+                clearTimeoutIfExists();
+              };
+            }, []);
+
+            // Timeout logic to set isConnected false if no data received
+            const startDataTimeout = () => {
+              clearTimeoutIfExists();
+              timeoutRef.current = setTimeout(() => {
+                console.warn('⚠️ No data received in 10 seconds, setting isConnected to false');
+                setStatus("offline");
+              }, 10000); // 10 seconds
+            };
+
+            const clearTimeoutIfExists = () => {
+              if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+                timeoutRef.current = null;
+              }
+            };
+
+      return (<div className={cn({
         "capitalize" : true,
-        "text-green-500" : row.getValue("status") === "online",
-        "text-gray-500" : row.getValue("status") === "offline",
-      })}>{row.getValue("status")}</div>
-    ),
+        "text-green-500" : status === "online",
+        "text-gray-500" : status === "offline",
+      })}>{status}</div>
+    ) 
+    }
   },
   {
     accessorKey: "name",
@@ -127,9 +167,15 @@ export const columns: ColumnDef<Payment>[] = [
     cell: ({ row }) => <div className="lowercase">{row.getValue("name")}</div>,
   },
   {
-    accessorKey: "assigned",
-    header: () => <div>Is Assigned</div>,
-    cell: ({ row }) => <div className="uppercase">{row.getValue("assigned")? "True" : "False"}</div>,
+    accessorKey: "mqttTopic",
+    header: "MQTT Topic",
+    cell: ({ row }) => <div>{row.getValue("mqttTopic")}</div>,
+  },
+  {
+    accessorKey: "assignedBus",
+    header: () => <div>Assinged Bus</div>,
+    accessorFn: (row) => row.assignedBus?.plateNumber,
+    cell: ({ row }) => <div className="uppercase">{row.getValue("assignedBus")}</div>,
   },
   {
     id: "actions",
@@ -163,6 +209,23 @@ export const columns: ColumnDef<Payment>[] = [
 ]
 
 export function MydevicesTable() {
+  const session = useSession()
+  const userId = session.data?.user.id
+  const {data, isLoading} = useSWR(userId? "get-devices" :  null, GetDevices)
+
+  async function GetDevices(){
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/device?userId=${userId}`)
+
+      const data = await response.json()
+      console.log(data)
+
+      return data
+    } catch (error) {
+      console.log(error)
+      return null
+    }
+  }
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -191,7 +254,11 @@ export function MydevicesTable() {
   })
 
   return (
-    <div className="w-full">
+    isLoading? (
+      <Skeleton className="h-48 w-full" />
+    ) : (
+      data &&
+      <div className="w-full">
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter device..."
@@ -303,5 +370,6 @@ export function MydevicesTable() {
         </div>
       </div>
     </div>
+    )
   )
 }

@@ -66,6 +66,8 @@ model User {
   updatedAt DateTime @updatedAt
   accounts      Account[]
   sessions      Session[]
+
+  Device Device[]
 }
 
 model SemaphoreKey {
@@ -87,15 +89,31 @@ model MiniBus {
   id          String  @id @default(auto()) @map("_id") @db.ObjectId // MongoDB ObjectId
   plateNumber   String   @unique
   model         String?
+  driver        String?
+  conductor     String?
   capacity      Int
   ownerId       String @db.ObjectId
   owner         User     @relation(fields: [ownerId], references: [id])
   gpsData       GPSData[]
+  device        Device?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
   Alert Alert[]
+}
 
+model Device {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId // MongoDB ObjectId
+  name        String
+  deviceId    String @unique
+  mqttTopic   String
+  userId      String @db.ObjectId
+  user        User @relation(fields: [userId], references: [id])
+  busId       String? @db.ObjectId @unique
+  assignedBus MiniBus? @relation(fields: [busId], references: [id])
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model GPSData {
@@ -152,6 +170,8 @@ model Alert {
   busId       String @db.ObjectId
   bus         MiniBus  @relation(fields: [busId], references: [id])
   type        AlertType
+  lat         String?
+  long        String?
   message     String
   timestamp   DateTime @default(now())
 }

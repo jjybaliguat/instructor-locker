@@ -5,10 +5,15 @@ import {
   AudioWaveform,
   BookOpen,
   Bot,
+  Bus,
+  CircleAlert,
   Command,
+  Computer,
   Frame,
   GalleryVerticalEnd,
+  LayoutDashboard,
   Map,
+  MessageSquareMore,
   PieChart,
   PlusIcon,
   Settings2,
@@ -37,13 +42,13 @@ const navData = {
     {
       title: "Dashboard",
       url: "/dashboard",
-      icon: SquareTerminal,
+      icon: LayoutDashboard,
       // isActive: true
     },
     {
       title: "Mini-Buses",
       url: "/dashboard/buses",
-      icon: Bot,
+      icon: Bus,
       // items: [
       //   {
       //     title: "Genesis",
@@ -62,17 +67,17 @@ const navData = {
     {
       title: "Devices",
       url: "/dashboard/devices",
-      icon: BookOpen
+      icon: Computer
     },
     {
       title: "Alerts",
       url: "/dashboard/alerts",
-      icon: Settings2
+      icon: CircleAlert
     },
     {
       title: "SMS",
       url: "/dashboard/sms",
-      icon: Settings2
+      icon: MessageSquareMore
     },
     {
       title: "Integrations",
