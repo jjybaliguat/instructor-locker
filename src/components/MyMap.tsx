@@ -10,7 +10,7 @@ import { database, onValue, ref } from '@/utils/firebase'
 import mqtt from "mqtt";
 
 const MQTT_BROKER_URL = "wss://test.mosquitto.org:8081"; // Use ws:// for unsecured, wss:// for secure
-const MQTT_TOPIC = "gps/data1";
+const MQTT_TOPIC = "gps/mini-bus-1";
 
 
 function sortLogs(logs: any){
@@ -23,9 +23,11 @@ const Map = () => {
     const [message, setMessage] = useState<string | null>(null);
 
     useEffect(() => {
-        const client = mqtt.connect(MQTT_BROKER_URL, {
-          clientId: `nextjs-client-1`,
-        });
+      const client = mqtt.connect(process.env.NEXT_PUBLIC_MQTT_BROKER_URL || '', {
+        username: process.env.NEXT_PUBLIC_MQTT_USER,
+        password: process.env.NEXT_PUBLIC_MQTT_PASS,
+        reconnectPeriod: 1000,
+      });
     
         client.on("connect", () => {
           console.log("Connected to MQTT broker");

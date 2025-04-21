@@ -40,6 +40,7 @@ import useSWR from "swr"
 import { useSession } from "next-auth/react"
 import { Skeleton } from "../ui/skeleton"
 import mqtt from "mqtt";
+import DeviceStatusCell from "../DeviceStatusCell"
 
 export type Device = {
   id: string
@@ -77,79 +78,7 @@ export const columns: ColumnDef<Device>[] = [
   {
     accessorKey: "status",
     header: "Status",
-    cell: ({ row }) => {
-      const [status, setStatus] = React.useState("offline")
-      const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
-      const clientRef = React.useRef<mqtt.MqttClient | null>(null);
-
-      React.useEffect(() => {
-              const client = mqtt.connect(process.env.NEXT_PUBLIC_MQTT_BROKER_URL || '', {
-                clientId: `nextjs-client-${Math.random().toString(16).slice(2, 8)}`,
-                username: 'nextjs-client',
-                password: 'AdmiN@11235',
-                protocol: 'mqtt', // ensure this is set to plain MQTT
-                port: 1883,
-                reconnectPeriod: 1000, // auto-reconnect every 1s
-              });
-          
-              client.on("connect", () => {
-                console.log("Connected to MQTT broker");
-                client.subscribe(row.getValue("mqttTopic"), (err) => {
-                  if (!err) {
-                    console.log(`Subscribed to ${row.getValue("mqttTopic")}`);
-                  } else {
-                    console.error("Subscription error:", err);
-                  }
-                });
-                startDataTimeout();
-              });
-          
-              client.on("message", (topic, payload) => {
-                if (topic === row.getValue("mqttTopic")) {
-                  setStatus("online")
-                }
-                startDataTimeout();
-              });
-
-              client.on('error', (err) => {
-                console.error('❌ MQTT Error:', err.message);
-              });
-          
-              client.on('close', () => {
-                console.log('🔌 Connection closed');
-                setStatus("offline");
-                clearTimeoutIfExists();
-              });
-          
-              return () => {
-                client.end();
-                clearTimeoutIfExists();
-              };
-            }, []);
-
-            // Timeout logic to set isConnected false if no data received
-            const startDataTimeout = () => {
-              clearTimeoutIfExists();
-              timeoutRef.current = setTimeout(() => {
-                console.warn('⚠️ No data received in 10 seconds, setting isConnected to false');
-                setStatus("offline");
-              }, 10000); // 10 seconds
-            };
-
-            const clearTimeoutIfExists = () => {
-              if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current);
-                timeoutRef.current = null;
-              }
-            };
-
-      return (<div className={cn({
-        "capitalize" : true,
-        "text-green-500" : status === "online",
-        "text-gray-500" : status === "offline",
-      })}>{status}</div>
-    ) 
-    }
+    cell: ({ row }) => <DeviceStatusCell topic={row.getValue('mqttTopic')} />
   },
   {
     accessorKey: "name",
