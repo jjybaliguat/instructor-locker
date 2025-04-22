@@ -58,7 +58,7 @@ export default function DeviceStatusCell({ topic }: Props) {
     clearTimeoutIfExists();
     timeoutRef.current = setTimeout(() => {
       setStatus('offline');
-    }, 30000); // 30 seconds
+    }, 10000); // 10 seconds
   };
 
   const clearTimeoutIfExists = () => {

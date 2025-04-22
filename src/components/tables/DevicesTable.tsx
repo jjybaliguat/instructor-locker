@@ -78,7 +78,7 @@ export const columns: ColumnDef<Device>[] = [
   {
     accessorKey: "status",
     header: "Status",
-    cell: ({ row }) => <DeviceStatusCell topic={row.getValue('mqttTopic')} />
+    cell: ({ row }) => <DeviceStatusCell topic={row.getValue('gpsTopic')} />
   },
   {
     accessorKey: "name",
@@ -96,9 +96,19 @@ export const columns: ColumnDef<Device>[] = [
     cell: ({ row }) => <div className="lowercase">{row.getValue("name")}</div>,
   },
   {
-    accessorKey: "mqttTopic",
-    header: "MQTT Topic",
-    cell: ({ row }) => <div>{row.getValue("mqttTopic")}</div>,
+    accessorKey: "gpsTopic",
+    header: "GPS Topic",
+    cell: ({ row }) => <div>{row.getValue("gpsTopic")}</div>,
+  },
+  {
+    accessorKey: "emergencyTopic",
+    header: "Emergency Topic",
+    cell: ({ row }) => <div>{row.getValue("emergencyTopic")}</div>,
+  },
+  {
+    accessorKey: "deviceId",
+    header: "Device Id",
+    cell: ({ row }) => <div>{row.getValue("deviceId")}</div>,
   },
   {
     accessorKey: "assignedBus",

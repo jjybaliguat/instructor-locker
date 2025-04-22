@@ -27,6 +27,7 @@ const Map = () => {
         username: process.env.NEXT_PUBLIC_MQTT_USER,
         password: process.env.NEXT_PUBLIC_MQTT_PASS,
         reconnectPeriod: 1000,
+        clean: true
       });
     
         client.on("connect", () => {
@@ -43,7 +44,7 @@ const Map = () => {
         client.on("message", (topic, payload) => {
           if (topic === MQTT_TOPIC) {
             const msg = payload?.toString();
-            console.log("Received message:", msg);
+            // console.log("Received message:", msg);
             setMessage(msg);
         
             try {

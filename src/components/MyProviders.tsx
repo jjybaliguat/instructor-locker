@@ -13,7 +13,7 @@ function MyProviders({children}: {children: ReactNode}) {
       disableTransitionOnChange
     >
       <SessionProvider>
-        {children}
+          {children}
       </SessionProvider>
     </ThemeProvider>
   )

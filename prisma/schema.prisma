@@ -67,7 +67,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
 
-  Device Device[]
+  device Device[]
 }
 
 model SemaphoreKey {
@@ -94,7 +94,6 @@ model MiniBus {
   capacity      Int
   ownerId       String @db.ObjectId
   owner         User     @relation(fields: [ownerId], references: [id])
-  gpsData       GPSData[]
   device        Device?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -106,11 +105,13 @@ model Device {
   id          String  @id @default(auto()) @map("_id") @db.ObjectId // MongoDB ObjectId
   name        String
   deviceId    String @unique
-  mqttTopic   String
-  userId      String @db.ObjectId
-  user        User @relation(fields: [userId], references: [id])
+  gpsTopic   String
+  emergencyTopic   String
+  userId      String? @db.ObjectId
+  user        User? @relation(fields: [userId], references: [id])
   busId       String? @db.ObjectId @unique
   assignedBus MiniBus? @relation(fields: [busId], references: [id])
+  gpsData     GPSData[]
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -118,12 +119,13 @@ model Device {
 
 model GPSData {
   id          String  @id @default(auto()) @map("_id") @db.ObjectId // MongoDB ObjectId
-  busId       String @db.ObjectId
-  bus         MiniBus  @relation(fields: [busId], references: [id])
-  latitude    Float
-  longitude   Float
+  devId       String
+  device      Device  @relation(fields: [devId], references: [deviceId])
+  lat    Float
+  lon   Float
   speed       Float    @default(0) // In km/h
   direction   Float    @default(0) // Angle in degrees
+  altitude   Float    @default(0) // Angle in degrees
   timestamp   DateTime @default(now()) // MQTT timestamp
 }
 
@@ -180,4 +182,12 @@ enum AlertType {
   GEOFENCE_BREACH
   OVERSPEEDING
   EMERGENCY
+}
+
+model PushSubscription {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  endpoint  String   @unique
+  keys      Json     // Store `keys` object here (auth, p256dh)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

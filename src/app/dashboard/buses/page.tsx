@@ -10,10 +10,11 @@ import useSWR from 'swr'
 import { useSession } from 'next-auth/react'
 
 type GPSData = {
-  latitude: number
-  longitude: number
+  lat: number
+  lon: number
   speed: number
   direction: number
+  altitude: number
   timestamp: string
 }
 
@@ -24,7 +25,9 @@ type MiniBus = {
   driver?: string
   conductor?: string
   capacity: number
-  gpsData: GPSData[]
+  device: {
+    gpsData: GPSData[]
+  },
   createdAt: string
   updatedAt: string
 }
@@ -75,9 +78,9 @@ export default function MiniBusesPage() {
               </TableHeader>
               <TableBody>
                 {miniBuses?.map((bus: MiniBus) => {
-                  const latestGPS = bus.gpsData?.[bus.gpsData.length - 1]
+                  const latestGPS = bus.device?.gpsData?.[bus.device.gpsData.length - 1]
                   const googleMapsLink = latestGPS
-                    ? `https://www.google.com/maps?q=${latestGPS.latitude},${latestGPS.longitude}`
+                    ? `https://www.google.com/maps?q=${latestGPS.lat},${latestGPS.lon}`
                     : null
 
                   return (
