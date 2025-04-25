@@ -103,7 +103,7 @@ export const columns: ColumnDef<Sms>[] = [
         </Button>
       )
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("message")}</div>,
+    cell: ({ row }) => <div className="">{row.getValue("message")}</div>,
   },
   {
     accessorKey: "recipient",
@@ -162,13 +162,14 @@ export const columns: ColumnDef<Sms>[] = [
 ]
 
 export function SmsTable() {
-  const { account } = useSemaphoreAccountStore()
-  const { data, isLoading } = useSWR(account ? "get-messages" : null, GetMessages)
+  const session = useSession()
+  const key = session.data?.user.semaphoreKey?.key
+  const { data, isLoading } = useSWR(key ? "get-messages" : null, GetMessages)
 
   async function GetMessages(){
     try {
-      if(!account.key) return null
-      const messages = await getMessages(account.key)
+      if(!key) return null
+      const messages = await getMessages(key)
 
       // console.log(messages)
       return messages
@@ -206,10 +207,10 @@ export function SmsTable() {
 
   return (
     <>
-    {isLoading? (
+    {isLoading && !key? (
       <Skeleton className="h-48 w-full" />
     ) : (
-      account.key === "" ? (
+      !key ? (
         <div>SMS Integration Not Configured or API Key Missing.</div>
       ) : (
         <>

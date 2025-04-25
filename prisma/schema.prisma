@@ -59,6 +59,7 @@ model User {
   emailVerified DateTime?
   image         String?
   semaphoreKey SemaphoreKey?
+  number    String?
   minibuses MiniBus[]
   companyName String?
   companyAddress  String?

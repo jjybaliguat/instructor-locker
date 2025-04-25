@@ -6,6 +6,7 @@ import {
   BookOpen,
   Bot,
   Bus,
+  ChartLine,
   CircleAlert,
   Command,
   Computer,
@@ -73,6 +74,11 @@ const navData = {
       title: "Alerts",
       url: "/dashboard/alerts",
       icon: CircleAlert
+    },
+    {
+      title: "Mini-Bus Reports",
+      url: "/dashboard/reports",
+      icon: ChartLine
     },
     {
       title: "SMS",

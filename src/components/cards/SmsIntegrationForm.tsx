@@ -17,6 +17,7 @@ import { useSession } from "next-auth/react"
 import { toast } from 'sonner'
 import { useRouter } from "next/navigation"
 import { useSemaphoreAccountStore } from "@/lib/store/semaphore"
+import { mutate } from "swr"
 
 export function SmsIntegrationForm() {
   const [pending, setPending] = React.useState(false)
@@ -56,25 +57,10 @@ export function SmsIntegrationForm() {
           duration: 3000
         })
       }else{
-        if(!account.account_name){
-          setAccount({
-            key: "",
-            account_name: "",
-            status: "",
-            credit_balance: 0
-          })
-          toast.error(account.apikey[0], {
-            duration: 3000
-          })
-        }else{
-          setAccount({
-            key: data.key,
-            ...account
-          })
-          toast.success("SMS ApiKey Updated", {
-            duration: 3000
-          })
-        }
+        toast.success("SMS ApiKey Updated", {
+          duration: 3000
+        })
+        mutate("getSemaphoreAccount")
       }
     } catch (error) {
       console.log(error)
