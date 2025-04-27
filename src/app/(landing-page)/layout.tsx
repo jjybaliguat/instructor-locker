@@ -22,7 +22,7 @@ export default async function Layout({
   return (
         <>
           <NextTopLoader showSpinner={false} />
-          <ScrollNav>
+          {/* <ScrollNav>
             <NavBar className="m-4 w-[90%] rounded-[15px] bg-black text-white flex items-center justify-between px-8 md:px-28 py-2 md:py-4 drop-shadow-md mx-auto"
                 initial={{ y: 0, opacity: 1 }}
                 before={{ y: 0, opacity: 1 }}
@@ -35,9 +35,9 @@ export default async function Layout({
               before={{ y: 0, opacity: 1 }}
               after={{ y: 0, opacity: 1 }}
             />
-            {children}
           </div>
-          <Footer />
+          <Footer /> */}
+            {children}
         </>
   );
 }
