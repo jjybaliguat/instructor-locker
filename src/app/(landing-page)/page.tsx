@@ -1,8 +1,11 @@
+import Hero from '@/components/homepage-layout/Hero'
 import React from 'react'
 
 const LandingPage = () => {
   return (
-    <div>MiniBus Tracker Landing Page</div>
+    <>
+      <Hero />
+    </>
   )
 }
 
