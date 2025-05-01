@@ -33,7 +33,7 @@ const DevicesPage = () => {
     <div className="flex flex-1 flex-col gap-2 p-4 pt-6">
       <h1 className="text-2xl font-bold">Devices</h1>
       {/* <MydevicesTable /> */}
-      <div className="flex flex-wrap gap-4 p-4">
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 grid-cols-1">
       {data?.map((dev: Device) => (
         <DeviceCard
           key={dev.id}

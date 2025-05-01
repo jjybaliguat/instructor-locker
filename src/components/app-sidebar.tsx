@@ -66,6 +66,11 @@ const navData = {
       // ],
     },
     {
+      title: "Bus Orientation",
+      url: "/dashboard/bus-orientation",
+      icon: Computer
+    },
+    {
       title: "Devices",
       url: "/dashboard/devices",
       icon: Computer

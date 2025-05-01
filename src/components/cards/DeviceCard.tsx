@@ -97,7 +97,7 @@ const DeviceCard = ({device} : {device: Device}) => {
         </div>
         <div className="mt-4">
             <h1>Battery Status</h1>
-            <div className={`w-64 h-12 bg-gray-400 dark:bg-gray-600 rounded-lg overflow-hidden relative`}>
+            <div className={`w-full h-12 bg-gray-400 dark:bg-gray-600 rounded-lg overflow-hidden relative`}>
                 <div
                 className={`h-full ${!isOnline? "bg-gray-400" :
                     batteryPercentage > 50 ? "bg-green-500" : batteryPercentage > 20 ? "bg-yellow-400" : "bg-red-500"
