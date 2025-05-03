@@ -3,7 +3,7 @@
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Circle, Tooltip } from 'react-leaflet'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import MyCurrentLocationMarker from './MyCurrentLocationMarker'
 import useSWR from 'swr'
 import { database, onValue, ref } from '@/utils/firebase'
@@ -11,6 +11,14 @@ import mqtt from "mqtt";
 
 const MQTT_BROKER_URL = "wss://test.mosquitto.org:8081"; // Use ws:// for unsecured, wss:// for secure
 const MQTT_TOPIC = "gps/mini-bus-1";
+
+// Fix default icon issue in Leaflet when using Webpack
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: '',
+  iconUrl: '',
+  shadowUrl: '',
+});
 
 
 function sortLogs(logs: any){
@@ -21,6 +29,15 @@ function sortLogs(logs: any){
 
 const Map = () => {
     const [message, setMessage] = useState<string | null>(null);
+    const markerRef = useRef<L.Marker | null>(null);
+    // const {data: devices, isLoading} = useSWR('getLatestCoord', getLatestDevicesCoord)
+    const [coord, setCoord] = useState<[number, number]>([14.6810331, 121.1123889])
+
+    const [gpsData, setGpsData] = useState({
+        lat: 0,
+        lon: 0,
+        direction: 0
+      })
 
     useEffect(() => {
       const client = mqtt.connect(process.env.NEXT_PUBLIC_MQTT_BROKER_URL || '', {
@@ -50,7 +67,7 @@ const Map = () => {
             try {
               const data = JSON.parse(msg);
               if (data.lat && data.lon) {
-                setGpsData({ lat: data.lat, lon: data.lon });
+                setGpsData({ lat: data.lat, lon: data.lon, direction: data.direction });
               }
             } catch (e) {
               console.error("Invalid JSON received:", msg);
@@ -63,13 +80,6 @@ const Map = () => {
         };
       }, []);
       
-    // const {data: devices, isLoading} = useSWR('getLatestCoord', getLatestDevicesCoord)
-    const [coord, setCoord] = useState<[number, number]>([14.6810331, 121.1123889])
-
-    const [gpsData, setGpsData] = useState({
-        lat: 0,
-        lon: 0
-      })
 
     //   console.log(gpsData)
     
@@ -106,6 +116,24 @@ const Map = () => {
         )
     }
 
+      const iconHtml = `<div style="
+      width: 100px;
+      height: 80px;
+      background-image: url('/bus-top-view.png'); 
+      background-size: contain;
+      background-repeat: no-repeat;
+      transform: rotate(${gpsData.direction + 90}deg);
+      transform-origin: center;
+      transition: transform 0.3s ease;
+    "></div>`;
+
+    const customIcon = L.divIcon({
+      className: '',
+      html: iconHtml,
+      iconSize: [80, 80],
+      iconAnchor: [40, 40],
+    });
+
     return (
         <div className='w-full h-[600px]'>
             <div className="p-4">
@@ -116,33 +144,20 @@ const Map = () => {
                 width: '100%'
             }} center={coord} zoom={13} scrollWheelZoom={false}
             >
-                <TileLayer
+                {/* <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
+                /> */}
+                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 <MyCurrentLocationMarker />
                 <Circle className='animate-pulse' center={[14.7607, 121.1568]} pathOptions={{ fillColor: 'blue' }} radius={200} />
-                <Marker icon={
-                    new L.Icon({
-                        iconUrl: '/marker-icon.png',
-                        iconRetinaUrl: '/marker-icon.png',
-                        iconSize: [50, 50],
-                        iconAnchor: [20, 20],
-                        popupAnchor: [0, 0],
-                        shadowUrl: '/marker-shadow.png',
-                        shadowSize: [80, 80],
-                    })
-                } 
-                // position={[gpsData.latitude, gpsData.longitude]}
-                position={[gpsData.lat, gpsData.lon]}
-                >
-                     {/* <Popup>
-                        Mini Bus San Isidro Terminal
-                    </Popup> */}
-                    <Tooltip direction="top" offset={[0, -30]} opacity={1}>
-                        Name: Maes Device 1<br />
-                    </Tooltip>
-                </Marker>
+                
+                <Marker
+                  position={{lat: gpsData.lat, lng: gpsData.lon}}
+                  icon={customIcon}
+                  ref={markerRef}
+                />
+                <Circle className='animate-pulse' center={[gpsData.lat, gpsData.lon]} pathOptions={{ fillColor: 'blue' }} radius={100} />
                 <Marker icon={
                         new L.Icon({
                             iconUrl: '/terminal-bus.png',
