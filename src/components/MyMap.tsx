@@ -8,6 +8,8 @@ import MyCurrentLocationMarker from './MyCurrentLocationMarker'
 import useSWR from 'swr'
 import { database, onValue, ref } from '@/utils/firebase'
 import mqtt from "mqtt";
+import { useSession } from 'next-auth/react'
+import { Device } from '@/types/Device'
 
 const MQTT_BROKER_URL = "wss://test.mosquitto.org:8081"; // Use ws:// for unsecured, wss:// for secure
 const MQTT_TOPIC = "gps/mini-bus-1";
@@ -27,17 +29,33 @@ function sortLogs(logs: any){
     return newLogs[0];
 }
 
+interface GpsDataProps {
+  lat: number,
+  lon: number,
+  direction: number
+}
+
 const Map = () => {
     const [message, setMessage] = useState<string | null>(null);
     const markerRef = useRef<L.Marker | null>(null);
-    // const {data: devices, isLoading} = useSWR('getLatestCoord', getLatestDevicesCoord)
+    const session = useSession()
+    const user = session.data?.user
+    const {data: devices, isLoading} = useSWR(user? 'getDevices' : null, GetDevices)
     const [coord, setCoord] = useState<[number, number]>([14.6810331, 121.1123889])
 
-    const [gpsData, setGpsData] = useState({
-        lat: 0,
-        lon: 0,
-        direction: 0
-      })
+    const [gpsData, setGpsData] = useState<GpsDataProps[] | null>()
+
+    async function GetDevices(){
+      try {
+        const response = await fetch(`/api/device?userId=${user?.id}`)
+        const data = await response.json()
+        console.log(data)
+        return data
+      } catch (error) {
+        console.log(error)
+        return null
+      }
+    }
 
     useEffect(() => {
       const client = mqtt.connect(process.env.NEXT_PUBLIC_MQTT_BROKER_URL || '', {
@@ -49,39 +67,46 @@ const Map = () => {
     
         client.on("connect", () => {
           console.log("Connected to MQTT broker");
-          client.subscribe(MQTT_TOPIC, (err) => {
-            if (!err) {
-              console.log(`Subscribed to ${MQTT_TOPIC}`);
-            } else {
-              console.error("Subscription error:", err);
-            }
-          });
+          devices?.map((device: Device)=>{
+            client.subscribe(device.gpsTopic, (err) => {
+              if (!err) {
+                console.log(`Subscribed to ${device.gpsTopic}`);
+              } else {
+                console.error("Subscription error:", err);
+              }
+            });
+          })
         });
     
         client.on("message", (topic, payload) => {
-          if (topic === MQTT_TOPIC) {
-            const msg = payload?.toString();
-            // console.log("Received message:", msg);
-            setMessage(msg);
-        
-            try {
-              const data = JSON.parse(msg);
-              if (data.lat && data.lon) {
-                setGpsData({ lat: data.lat, lon: data.lon, direction: data.direction });
+          devices?.map((device: Device, index: number) => {
+            if (topic === device.gpsTopic) {
+              const msg = payload?.toString();
+              setMessage(msg);
+              try {
+                const data = JSON.parse(msg);
+                if (data.lat && data.lon) {
+                  setGpsData((prev) => {
+                    const newData = [...(prev ?? [])];
+                    newData[index] = {
+                      lat: data.lat,
+                      lon: data.lon,
+                      direction: data.direction,
+                    };
+                    return newData;
+                  });
+                }
+              } catch (e) {
+                console.error("Invalid JSON received:", msg);
               }
-            } catch (e) {
-              console.error("Invalid JSON received:", msg);
             }
-          }
+          })
         });
     
         return () => {
           client.end();
         };
-      }, []);
-      
-
-    //   console.log(gpsData)
+      }, [devices]);
     
         // useEffect(()=>{
         //   const latRef = ref(database, 'gpsData');
@@ -116,23 +141,26 @@ const Map = () => {
         )
     }
 
-      const iconHtml = `<div style="
-      width: 100px;
-      height: 80px;
-      background-image: url('/bus-top-view.png'); 
-      background-size: contain;
-      background-repeat: no-repeat;
-      transform: rotate(${gpsData.direction + 90}deg);
-      transform-origin: center;
-      transition: transform 0.3s ease;
-    "></div>`;
-
-    const customIcon = L.divIcon({
-      className: '',
-      html: iconHtml,
-      iconSize: [80, 80],
-      iconAnchor: [40, 40],
-    });
+    function createCustomBusIcon(direction: number) {
+      const iconHtml = `
+        <div style="
+          width: 100px;
+          height: 80px;
+          background-image: url('/bus-top-view.png'); 
+          background-size: contain;
+          background-repeat: no-repeat;
+          transform: rotate(${direction+ 90}deg);
+          transform-origin: center;
+          transition: transform 0.3s ease;
+        "></div>`;
+    
+      return L.divIcon({
+        className: '',
+        html: iconHtml,
+        iconSize: [80, 80],
+        iconAnchor: [40, 40],
+      });
+    }
 
     return (
         <div className='w-full h-[600px]'>
@@ -151,13 +179,28 @@ const Map = () => {
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 <MyCurrentLocationMarker />
                 <Circle className='animate-pulse' center={[14.7607, 121.1568]} pathOptions={{ fillColor: 'blue' }} radius={200} />
-                
-                <Marker
-                  position={{lat: gpsData.lat, lng: gpsData.lon}}
-                  icon={customIcon}
-                  ref={markerRef}
-                />
-                <Circle className='animate-pulse' center={[gpsData.lat, gpsData.lon]} pathOptions={{ fillColor: 'blue' }} radius={100} />
+                {devices?.map((device: Device, index: number)=>(
+                  gpsData?.[index] && (
+                    <>
+                    <Marker key={device.id}
+                      position={[gpsData[index].lat, gpsData[index].lon]}
+                      // position={
+                      //   gpsData?.[index]
+                      //     ? { lat: gpsData[index].lat, lng: gpsData[index].lon }
+                      //     : undefined
+                      // }
+                      icon={gpsData?.[index] ? createCustomBusIcon(gpsData[index].direction) : undefined}
+                      ref={markerRef}
+                    >
+                      <Tooltip direction="top" offset={[0, -30]} opacity={1}>
+                          {device.name}
+                          <span>{gpsData[index].lat}</span>
+                      </Tooltip>
+                    </Marker>
+                    <Circle className='animate-pulse' center={[gpsData[index]?.lat, gpsData[index].lon]} pathOptions={{ fillColor: 'blue' }} radius={100} />
+                  </>
+                  )
+                ))}
                 <Marker icon={
                         new L.Icon({
                             iconUrl: '/terminal-bus.png',

@@ -4,5 +4,16 @@ export interface Device {
     gpsTopic: string,
     emergencyTopic: string,
     battLevelTopic: string,
-    gpsData: any
+    accelTopic: string,
+    gpsData: {
+        lat: number,
+        lon: number,
+        direction: number
+    }[],
+    assignedBus: {
+        capacity: number,
+        plateNumber: string,
+        driver: string,
+        conductor: string
+    }[]
 }
