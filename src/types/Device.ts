@@ -15,5 +15,5 @@ export interface Device {
         plateNumber: string,
         driver: string,
         conductor: string
-    }[]
+    }
 }

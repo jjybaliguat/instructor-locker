@@ -11,25 +11,25 @@ export default function BusSelector() {
   const router = useRouter();
   const session = useSession()
   const user = session.data?.user
-//   const {data: buses, isLoading} = useSWR(user? 'getMiniBuses' : null, GetMiniBuses)
+  const {data: buses, isLoading} = useSWR(user? 'getMiniBuses' : null, GetMiniBuses)
   const [selectedBus, setSelectedBus] = useState<any | null>(null)
-  const [buses, setBuses] = useState<any | null>(null)
+  // const [buses, setBuses] = useState<any | null>(null)
 
   async function GetMiniBuses(){
     try {
         const response = await fetch(`/api/mini-bus?userId=${user?.id}`)
         const data = await response.json()
         // console.log(data)
-        setBuses(data)
+        return data
     } catch (error) {
         console.log(error)
-        setBuses(null)
+        return null
     }
   }
 
-  useEffect(()=> {
-    user && GetMiniBuses()
-  }, [router, user])
+  // useEffect(()=> {
+  //   user && GetMiniBuses()
+  // }, [router, user])
 
   return (
     <>

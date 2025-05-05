@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { AddBusDialog } from '@/components/dialogs/AddBusDialog'
 import useSWR from 'swr'
 import { useSession } from 'next-auth/react'
+import Link from 'next/link'
 
 type GPSData = {
   lat: number
@@ -26,6 +27,7 @@ type MiniBus = {
   conductor?: string
   capacity: number
   device: {
+    id: string,
     gpsData: GPSData[]
   },
   createdAt: string
@@ -74,6 +76,7 @@ export default function MiniBusesPage() {
                   <TableHead>Capacity</TableHead>
                   <TableHead>Last Location</TableHead>
                   <TableHead>Last Updated</TableHead>
+                  <TableHead>Route Logs</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -93,10 +96,10 @@ export default function MiniBusesPage() {
                       <TableCell>
                         {googleMapsLink ? (
                           <a
-                            href={googleMapsLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 hover:underline"
+                          href={googleMapsLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary hover:underline"
                           >
                             View on Map
                           </a>
@@ -109,6 +112,7 @@ export default function MiniBusesPage() {
                           ? new Date(latestGPS.timestamp).toLocaleString()
                           : new Date(bus.createdAt).toLocaleString()}
                       </TableCell>
+                      {bus.device && <TableCell><Link href={`/dashboard/buses/route-logs/${bus.device?.id}`} className='text-primary hover:underline'>View Route</Link></TableCell>}
                     </TableRow>
                   )
                 })}

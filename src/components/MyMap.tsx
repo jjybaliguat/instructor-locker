@@ -1,6 +1,5 @@
 'use client'
 
-import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Circle, Tooltip } from 'react-leaflet'
 import { useEffect, useRef, useState } from 'react'
@@ -10,9 +9,7 @@ import { database, onValue, ref } from '@/utils/firebase'
 import mqtt from "mqtt";
 import { useSession } from 'next-auth/react'
 import { Device } from '@/types/Device'
-
-const MQTT_BROKER_URL = "wss://test.mosquitto.org:8081"; // Use ws:// for unsecured, wss:// for secure
-const MQTT_TOPIC = "gps/mini-bus-1";
+import L from 'leaflet'
 
 // Fix default icon issue in Leaflet when using Webpack
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -22,12 +19,6 @@ L.Icon.Default.mergeOptions({
   shadowUrl: '',
 });
 
-
-function sortLogs(logs: any){
-    let newLogs = logs?.map((a: any, b: any)=>b.createdAt - a.createdAt)
-    console.log(logs?.map((a: any, b: any)=>b.createdAt - a.createdAt))
-    return newLogs[0];
-}
 
 interface GpsDataProps {
   lat: number,
@@ -107,39 +98,7 @@ const Map = () => {
           client.end();
         };
       }, [devices]);
-    
-        // useEffect(()=>{
-        //   const latRef = ref(database, 'gpsData');
-        //   onValue(latRef, (snapshot: { val: () => any; }) => {
-        //     const data = snapshot.val();
-        //     setGpsData(data)
-        //   });
-        // }, [])
-
-    useEffect(() => {
-        // Function to update coordinates
-        const moveMarker = () => {
-            // console.log("moved")
-            setCoord((prev) => [
-            prev[0] + 0.00001, // Simulate latitude change
-            prev[1] + 0.00001, // Simulate longitude change
-          ])
-        };
-    
-        // Update coordinates every 1 second (1000ms)
-        const intervalId = setInterval(moveMarker, 1000);
-    
-        // Clean up the interval on component unmount
-        return () => clearInterval(intervalId);
-      }, []);
-
-    const SearchLocation = () => {
-        return (
-            <div className="search-location">
-                <input type="text" placeholder="Search Location" />
-            </div>
-        )
-    }
+  
 
     function createCustomBusIcon(direction: number) {
       const iconHtml = `
@@ -170,12 +129,8 @@ const Map = () => {
             <MapContainer style={{
                 height: '100%',
                 width: '100%'
-            }} center={coord} zoom={13} scrollWheelZoom={false}
+            }} center={coord} zoom={13}
             >
-                {/* <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                /> */}
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 <MyCurrentLocationMarker />
                 <Circle className='animate-pulse' center={[14.7607, 121.1568]} pathOptions={{ fillColor: 'blue' }} radius={200} />
@@ -193,8 +148,13 @@ const Map = () => {
                       ref={markerRef}
                     >
                       <Tooltip direction="top" offset={[0, -30]} opacity={1}>
-                          {device.name}
-                          <span>{gpsData[index].lat}</span>
+                          <div>
+                            <h1>{device.name}</h1>
+                            <p>Plate No: {device.assignedBus.plateNumber}</p>
+                            <p>Driver: {device.assignedBus.driver}</p>
+                            <p>Conductor: {device.assignedBus.conductor}</p>
+                            <p>Capacity: {device.assignedBus.capacity}</p>
+                          </div>
                       </Tooltip>
                     </Marker>
                     <Circle className='animate-pulse' center={[gpsData[index]?.lat, gpsData[index].lon]} pathOptions={{ fillColor: 'blue' }} radius={100} />
