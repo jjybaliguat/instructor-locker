@@ -18,7 +18,6 @@ export default function Layout({children}:{children: ReactNode}) {
     <>
     <MyProviders>
       <NextTopLoader showSpinner={false} />
-        <PushNotificationInit />
         <SidebarProvider>
           <Toaster position="top-center" />
           <AppSidebar />
@@ -30,7 +29,7 @@ export default function Layout({children}:{children: ReactNode}) {
                 <MyBreadCrumb />
               </div>
             </header>
-            <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+            <div className="flex flex-1 flex-col gap-4 p-2 md:p-4 pt-0">
               {children}
             </div>
           </SidebarInset>

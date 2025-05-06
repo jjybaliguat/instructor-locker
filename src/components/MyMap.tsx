@@ -40,7 +40,6 @@ const Map = () => {
       try {
         const response = await fetch(`/api/device?userId=${user?.id}`)
         const data = await response.json()
-        console.log(data)
         return data
       } catch (error) {
         console.log(error)
@@ -122,14 +121,13 @@ const Map = () => {
     }
 
     return (
-        <div className='w-full h-[600px]'>
-            <div className="p-4">
-            <h1 className='text-xl'>Mini-Buses&apos; Real-Time Locations</h1>
-            </div>
+        <div className='h-[50vh] md:h-[80vh] md:px-6 py-6 px-2'>
+            <h1 className='text-xl font-medium'>Mini-Buses&apos; Real-Time Locations</h1>
             <MapContainer style={{
                 height: '100%',
                 width: '100%'
             }} center={coord} zoom={13}
+            className='h-full w-full z-0 mt-4'
             >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 <MyCurrentLocationMarker />

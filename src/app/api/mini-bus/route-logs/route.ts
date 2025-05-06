@@ -17,11 +17,11 @@ export async function GET(req: Request) {
 
     // Get yesterday's date
     const startOfYesterday = new Date(now);
-    startOfYesterday.setDate(now.getDate() - 1);
+    startOfYesterday.setDate(now.getDate() - 3);
     startOfYesterday.setHours(0, 0, 0, 0); // 12:00 AM yesterday
 
     const endOfYesterday = new Date(now);
-    endOfYesterday.setDate(now.getDate() - 1);
+    endOfYesterday.setDate(now.getDate() - 3);
     endOfYesterday.setHours(23, 59, 59, 999); // 11:59:59 PM yesterday
 
     const routelogs = await prisma.gPSData.findMany({

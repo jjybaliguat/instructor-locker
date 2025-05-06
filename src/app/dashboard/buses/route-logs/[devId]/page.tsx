@@ -32,6 +32,7 @@ const MiniBusRouteLogs = async ({
   return (
     <div className="p-6 space-y-6">
         <h1 className="text-2xl font-bold">Mini-Bus Route Logs Today</h1>
+        <p>Total Gps Logs: {routeLogs.length}</p>
         <div className="min-h-[90vh] flex-1 rounded-xl bg-muted/50 md:min-h-min z-40">
             <RouteMap routeLogs={routeLogs}/>
         </div>

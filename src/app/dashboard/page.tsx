@@ -15,7 +15,7 @@ const Dashboard = () => {
         <OverviewCard title='Total Buses' image='/bus2.png' total={2} />
         <OverviewCard title='Total Devices' image='/gps-device.png' total={2} />
       </div>
-      <div className="min-h-[900vh] flex-1 rounded-xl bg-muted/50 md:min-h-min z-40 px-6">
+      <div className="h-[55vh] md:h-[90vh] w-full rounded-xl bg-muted/50 md:min-h-min z-40 p-2 md:p-4">
         <Map />
       </div>
     </>

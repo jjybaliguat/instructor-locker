@@ -59,7 +59,7 @@ export default function LoginPage() {
         redirect: false 
       });
       if (response?.ok) {
-        router.push("/dashboard");
+        router.refresh();
         // toast.success("login successful");
       } else if (response?.status === 401) {
         setError("Invalid Credentials");

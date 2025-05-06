@@ -2,6 +2,7 @@
 import React, { ReactNode } from 'react'
 import { ThemeProvider } from './theme-provider'
 import { SessionProvider } from 'next-auth/react'
+import PushNotificationInit from './PushNotificationProvider'
 
 function MyProviders({children}: {children: ReactNode}) {
 
@@ -13,6 +14,7 @@ function MyProviders({children}: {children: ReactNode}) {
       disableTransitionOnChange
     >
       <SessionProvider>
+        <PushNotificationInit />
           {children}
       </SessionProvider>
     </ThemeProvider>

@@ -19,6 +19,7 @@ import {
   PlusIcon,
   Settings2,
   SquareTerminal,
+  TriangleAlert,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -102,23 +103,20 @@ const navData = {
       ],
     },
   ],
-  projects: [
+  userNav: [
     {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
+      title: "Dashboard",
+      url: "/dashboard",
+      icon: LayoutDashboard,
+      // isActive: true
     },
     {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
+      title: "Alerts",
+      url: "/track/alerts",
+      icon: TriangleAlert,
+      // isActive: true
     },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
-  ],
+  ]
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -129,7 +127,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <MySidebarHeader />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={navData.navMain} />
+        {data && data?.user.role === "OPERATOR" ? <NavMain items={navData.navMain} /> : data?.user.role === "USER" ?<NavMain items={navData.userNav} /> : null}
         {/* <NavProjects projects={data.projects} /> */}
       </SidebarContent>
       <SidebarFooter>
