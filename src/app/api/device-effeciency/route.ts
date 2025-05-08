@@ -4,51 +4,68 @@ import { NextResponse } from 'next/server';
 const prisma = new PrismaClient()
 
 export async function GET() {
-    // Get the current date
-    const now = new Date();
+  const now = new Date();
 
-    // Get the start of the current week (Sunday)
-    const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay())); // Set to Sunday
+  // Start of the week: Sunday
+  const startOfWeek = new Date(now);
+  startOfWeek.setDate(now.getDate() - now.getDay());
+  startOfWeek.setHours(0, 0, 0, 0);
+  console.log(startOfWeek)
 
-    // Reset the time to midnight (00:00:00) for a clean date comparison
-    startOfWeek.setHours(0, 0, 0, 0);
-    const result = await prisma.$runCommandRaw({
-        aggregate: 'GPSData',
-        pipeline: [
-            {
-              $match: {
-                devId: 'Dev-234-3229-001', // Filter by device ID
-                timestamp: {
-                  $gte: startOfWeek, // Start of the current week
-                  $lte: new Date(), // Current date
-                },
-              },
-            },
-            {
-              $group: {
-                _id: {
-                  $dateToString: { format: '%Y-%m-%d', date: '$timestamp' }, // Group by date
-                },
-                count: { $sum: 1 },
-              },
-            },
-            { $sort: { _id: 1 } } // Sort by date ascending
-          ],
-        cursor: {},
-      }) as unknown as {
-        cursor: {
-          firstBatch: {
-            _id: string;
-            count: number;
-          }[];
-        };
-      };
-      
-      const chartData = result.cursor.firstBatch.map(day => ({
-        day: day._id,
-        expected: 17280,
-        actual: day.count,
-      }));
+  // End of the week: Saturday
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(startOfWeek.getDate() + 6);
+  endOfWeek.setHours(23, 59, 59, 999);
+
+  const result = await prisma.$runCommandRaw({
+    aggregate: 'GPSData',
+    pipeline: [
+      {
+        $match: {
+          devId: 'Dev-234-3229-001', // Match by your model's devId field
+          timestamp: {
+            $gte: startOfWeek,
+            $lte: endOfWeek,
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $dateToString: { format: '%Y-%m-%d', date: '$timestamp' },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ],
+    cursor: {},
+  }) as unknown as {
+    cursor: {
+      firstBatch: {
+        _id: string;
+        count: number;
+      }[];
+    };
+  };
+
+  console.log(result)
+
+  // Convert results to a map for easy lookup
+  const countsMap = new Map(result.cursor.firstBatch.map(entry => [entry._id, entry.count]));
+
+  // Build 7-day response
+  const chartData = Array.from({ length: 7 }).map((_, i) => {
+    const date = new Date(startOfWeek);
+    date.setDate(startOfWeek.getDate() + i);
+    const isoDate = date.toISOString().split('T')[0];
+
+    return {
+      day: isoDate,
+      expected: 17280,
+      actual: countsMap.get(isoDate) || 30,
+    };
+  });
 
   return NextResponse.json(chartData);
 }

@@ -28,19 +28,17 @@ interface GpsDataProps {
   direction: number
 }
 
-const Map = () => {
+const CommutersMap = () => {
     const [message, setMessage] = useState<string | null>(null);
     const markerRef = useRef<L.Marker | null>(null);
-    const session = useSession()
-    const user = session.data?.user
-    const {data: devices, isLoading} = useSWR(user? 'getDevices' : null, GetDevices)
+    const {data: devices, isLoading} = useSWR('getDevices', GetDevices)
     const [coord, setCoord] = useState<[number, number]>([14.6810331, 121.1123889])
 
     const [gpsData, setGpsData] = useState<GpsDataProps[] | null>()
 
     async function GetDevices(){
       try {
-        const response = await fetch(`/api/device?userId=${user?.id}`)
+        const response = await fetch(`/api/device/get-all`)
         const data = await response.json()
         return data
       } catch (error) {
@@ -185,4 +183,4 @@ const Map = () => {
     )
 }
 
-export default Map
+export default CommutersMap
