@@ -136,7 +136,7 @@ export default function LoginPage() {
                       )}
                     />
                 <Button disabled={pending} type="submit" className="w-full">
-                  {pending? "Logging in..." : "Login"}
+                  {pending? "Logging In..." : "Login"}
                 </Button>
                 {/* <Button type="button" variant="outline" className="w-full"
                   onClick={async()=>{
