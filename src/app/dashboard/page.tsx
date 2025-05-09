@@ -19,7 +19,9 @@ const Dashboard = () => {
           </>
       </div>
       }
-      <LockerCard title='My Locker' image='/locker-pic.png' />
+      {user.role === "INSTRUCTOR" &&
+        <LockerCard title='My Locker' image='/locker-pic.png' />
+      }
     </>
   )
 }
