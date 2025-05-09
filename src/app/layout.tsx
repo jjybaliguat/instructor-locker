@@ -21,8 +21,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Mini-Bus Tracker",
-  description: "First Mini-Bus Tracker in San Isidro Rod. Rizal",
+  title: "QR Code Locker System",
+  description: "QR Code locker System In Colegio de Montalban",
 };
 
 export default async function RootLayout({

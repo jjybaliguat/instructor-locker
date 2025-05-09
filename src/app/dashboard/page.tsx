@@ -1,23 +1,25 @@
-import React from 'react'
-import dynamic from 'next/dynamic'
-import Image from 'next/image'
-import OverviewCard from '@/components/cards/OverviewCard'
+"use client"
 
-const Map = dynamic(() => import('@/components/MyMap'), {
-  ssr: false, // disable server-side rendering
-  loading: () => <p>Loading map...</p>, // optional: loading fallback
-})
+import React from 'react'
+import OverviewCard from '@/components/cards/OverviewCard'
+import { useSession } from 'next-auth/react'
+import LockerCard from '@/components/cards/LockerCard'
 
 const Dashboard = () => {
+  const {data} = useSession()
+  const user = data?.user
   return (
+    user &&
     <>
+      {user?.role === "ADMIN" &&
       <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-        <OverviewCard title='Total Buses' image='/bus2.png' total={2} />
-        <OverviewCard title='Total Devices' image='/gps-device.png' total={2} />
+          <>
+          <OverviewCard title='Total Instructors' image='/people-icon.png' total={15} />
+          <OverviewCard title='Total Lockers' image='/locker-pic.png' total={15} />
+          </>
       </div>
-      <div className="h-[80vh] md:h-[90vh] w-full rounded-xl bg-muted/50 md:min-h-min z-40 p-2 md:p-4">
-        <Map />
-      </div>
+      }
+      <LockerCard title='My Locker' image='/locker-pic.png' />
     </>
   )
 }

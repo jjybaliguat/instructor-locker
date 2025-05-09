@@ -10,6 +10,7 @@ import {
   CircleAlert,
   Command,
   Computer,
+  FileLock2,
   Frame,
   GalleryVerticalEnd,
   LayoutDashboard,
@@ -17,9 +18,13 @@ import {
   MessageSquareMore,
   PieChart,
   PlusIcon,
+  QrCode,
   Settings2,
   SquareTerminal,
   TriangleAlert,
+  User,
+  UserIcon,
+  Users,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -45,63 +50,17 @@ const navData = {
       title: "Dashboard",
       url: "/dashboard",
       icon: LayoutDashboard,
-      // isActive: true
     },
     {
-      title: "Mini-Buses",
-      url: "/dashboard/buses",
-      icon: Bus,
-      // items: [
-      //   {
-      //     title: "Genesis",
-      //     url: "#",
-      //   },
-      //   {
-      //     title: "Explorer",
-      //     url: "#",
-      //   },
-      //   {
-      //     title: "Quantum",
-      //     url: "#",
-      //   },
-      // ],
+      title: "Intructors",
+      url: "/dashboard/instructors",
+      icon: Users,
     },
     {
-      title: "Bus Orientation",
-      url: "/dashboard/bus-orientation",
-      icon: Computer
-    },
-    {
-      title: "Devices",
-      url: "/dashboard/devices",
-      icon: Computer
-    },
-    {
-      title: "Alerts",
-      url: "/dashboard/alerts",
-      icon: CircleAlert
-    },
-    {
-      title: "Mini-Bus Reports",
-      url: "/dashboard/reports",
-      icon: ChartLine
-    },
-    {
-      title: "SMS",
-      url: "/dashboard/sms",
-      icon: MessageSquareMore
-    },
-    {
-      title: "Integrations",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "SMS",
-          url: "/dashboard/integration/sms",
-        }
-      ],
-    },
+      title: "Lockers",
+      url: "/dashboard/lockers",
+      icon: FileLock2
+    }
   ],
   userNav: [
     {
@@ -111,9 +70,15 @@ const navData = {
       // isActive: true
     },
     {
-      title: "Alerts",
-      url: "/track/alerts",
-      icon: TriangleAlert,
+      title: "My QR Code",
+      url: "/dashboard/qr",
+      icon: QrCode,
+      // isActive: true
+    },
+    {
+      title: "Profile",
+      url: "/dashboard/profile",
+      icon: User,
       // isActive: true
     },
   ]
@@ -127,7 +92,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <MySidebarHeader />
       </SidebarHeader>
       <SidebarContent>
-        {data && data?.user.role === "OPERATOR" ? <NavMain items={navData.navMain} /> : data?.user.role === "USER" ?<NavMain items={navData.userNav} /> : null}
+        {data && data?.user.role === "ADMIN" ? <NavMain items={navData.navMain} /> : data?.user.role === "INSTRUCTOR" ?<NavMain items={navData.userNav} /> : null}
         {/* <NavProjects projects={data.projects} /> */}
       </SidebarContent>
       <SidebarFooter>

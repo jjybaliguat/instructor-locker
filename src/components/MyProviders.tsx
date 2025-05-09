@@ -14,7 +14,7 @@ function MyProviders({children}: {children: ReactNode}) {
       disableTransitionOnChange
     >
       <SessionProvider>
-        <PushNotificationInit />
+        {/* <PushNotificationInit /> */}
           {children}
       </SessionProvider>
     </ThemeProvider>

@@ -76,20 +76,20 @@ export default function LoginPage() {
     <>
     <div className="flex min-h-svh w-full items-center justify-center bg-muted p-6 md:p-10">
       <div className="w-full max-w-sm mx-auto">
-        <Link href="/"><Button variant="outline"><ChevronLeft /> Home</Button></Link>
+        {/* <Link href="/"><Button variant="outline"><ChevronLeft /> Home</Button></Link> */}
         <Card className="w-full mt-2">
           <CardHeader>
             <CardTitle className="flex gap-2 items-center flex-col md:flex-row">
-              <div className="p-1 bg-slate-100 rounded-[15px]">
+              {/* <div className="p-1 bg-slate-100 rounded-[15px]">
                 <Image
                   src="/logo.png"
                   alt=""
                   height={80}
                   width={80}
                 />
-              </div>
-              <span className="text-2xl font-bold text-center">Welcome to Mini-Bus TRACKER</span></CardTitle>
-            <CardDescription className="text-center">First Mini Bus tracker in Montalban Rizal</CardDescription>
+              </div> */}
+              <span className="text-2xl font-bold text-center">Welcome to QR Code Locker System</span></CardTitle>
+            <CardDescription className="text-center"></CardDescription>
           </CardHeader>
           {!!error && (
             <div className="bg-destructive/15 dark:bg-destructive/30 p-3 flex items-center gap-x-2 text-sm text-destructive dark:text-red-500 mb-6">
@@ -138,7 +138,7 @@ export default function LoginPage() {
                 <Button disabled={pending} type="submit" className="w-full">
                   {pending? "Logging in..." : "Login"}
                 </Button>
-                <Button type="button" variant="outline" className="w-full"
+                {/* <Button type="button" variant="outline" className="w-full"
                   onClick={async()=>{
                     try {
                       const response = await signIn('google')
@@ -149,14 +149,14 @@ export default function LoginPage() {
                   }}
                 >
                   Login with Google
-                </Button>
+                </Button> */}
               </div>
-              <div className="mt-4 text-center text-sm">
+              {/* <div className="mt-4 text-center text-sm">
                 Don&apos;t have an account?{" "}
                 <Link href="/auth/sign-up" className="underline underline-offset-4">
                   Sign up
                 </Link>
-              </div>
+              </div> */}
             </form>
             </Form>
           </CardContent>

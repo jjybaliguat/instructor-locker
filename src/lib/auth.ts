@@ -39,8 +39,14 @@ export const options = {
                 const user = await prisma.user.findUnique({
                   where: {
                     email: credentials.email
+                  },
+                  include: {
+                    instructor: true,
+                    admin: true
                   }
                 });
+
+                // console.log(user)
                 if (!user) {
                     throw new Error("")
                 }
@@ -81,16 +87,21 @@ export const options = {
           const existingUser = await prisma.user.findUnique({
             where: {
               email: profile.email
+            },
+            include: {
+              instructor: true,
+              admin: true
             }
-          })
+          })      
           if(!existingUser){
-            const user = await prisma.user.create({
-              data: {
-                name: profile.name,
-                email: profile.email,
-                image: profile.picture,
-              }
-            })
+            // const user = await prisma.user.create({
+            //   data: {
+            //     email: profile.email,
+            //     instructor: {
+            //       name: profile.name,
+            //     }
+            //   }
+            // })
           }
           return true
         } else {
@@ -112,18 +123,21 @@ export const options = {
             email: user.email
           },
           include: {
-            semaphoreKey: true
+            instructor: true,
+            admin: true
           }
         })
+
 
         token.id = dbUser.id;
         token.name = dbUser.name;
         token.email = dbUser.email;
-        token.image = dbUser.image
         token.role = dbUser.role;
-        token.semaphoreKey = dbUser?.semaphoreKey;
-        token.companyName = dbUser.companyName;
-        token.companyAddress = dbUser.companyAddress;
+        token.instructor = {
+          id: dbUser?.instructor?.id,
+          name: dbUser?.instructor?.name,
+          qrCode: dbUser?.instructor?.qrCode
+        };
       }
 
       // ---> ADDITION <---
@@ -131,9 +145,6 @@ export const options = {
         if (session?.user?.name && session?.user?.email) {
           token.email = session.user.email,
           token.name = session.user.name
-          token.companyName = session.user.companyName
-          token.companyAddress = session.user.companyAddress
-          token.semaphoreKey = session.user.semaphoreKey
         }
       }
       
@@ -151,11 +162,12 @@ export const options = {
         session.user.id = token.id;
         session.user.name = token.name;
         session.user.email = token.email;
-        session.user.image = token.image;
         session.user.role = token.role;
-        session.user.semaphoreKey = token.semaphoreKey;
-        session.user.companyName = token.companyName;
-        session.user.companyAddress = token.companyAddress;
+        session.user.instructor = {
+          id: token?.instructor?.id,
+          name: token?.instructor?.name,
+          qrCode: token?.instructor?.qrCode
+        };
       }
 
       return session;

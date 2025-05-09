@@ -51,146 +51,63 @@ model VerificationToken {
 }
 
 model User {
-  id      String   @id @default(auto()) @map("_id") @db.ObjectId
-  name          String?
-  email         String?  @unique
-  password String?
-  role      Role     @default(USER)
-  emailVerified DateTime?
-  image         String?
-  semaphoreKey SemaphoreKey?
-  number    String?
-  minibuses MiniBus[]
-  companyName String?
-  companyAddress  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  accounts      Account[]
-  sessions      Session[]
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  email        String   @unique
+  password     String
+  role         Role
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  device Device[]
+  // Optional relations
+  admin        AdminProfile?
+  instructor   InstructorProfile?
+
+  accounts     Account[]
+  sessions     Session[]
 }
 
-model SemaphoreKey {
-  id      String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId  String @db.ObjectId @unique
-  user    User @relation(fields: [userId], references: [id])
-  key     String @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model AdminProfile {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  user         User     @relation(fields: [userId], references: [id])
+  userId       String   @unique @db.ObjectId
+  createdAt    DateTime @default(now())
+
+  instructors  InstructorProfile[]
+}
+
+
+model InstructorProfile {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  qrCode      String   @unique // Unique qrCode for each instructor
+  user         User     @relation(fields: [userId], references: [id])
+  userId       String   @unique @db.ObjectId
+  createdAt    DateTime @default(now())
+
+  admin        AdminProfile? @relation(fields: [adminId], references: [id])
+  adminId      String?       @db.ObjectId
+
+  // One-to-One relation with Locker
+  locker       Locker? 
+}
+
+model Locker {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  lockerNumber Int   @unique // Can be a QR code or any unique code
+  status       LockerStatus @default(CLOSED)
+  assignedTo   InstructorProfile? @relation(fields: [instructorId], references: [id])
+  instructorId String?   @unique @db.ObjectId // One Locker per Instructor
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+enum LockerStatus {
+  CLOSED
+  OPEN
 }
 
 enum Role {
   ADMIN
-  OPERATOR
-  USER
-}
-
-model MiniBus {
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId // MongoDB ObjectId
-  plateNumber   String   @unique
-  model         String?
-  driver        String?
-  conductor     String?
-  capacity      Int
-  ownerId       String @db.ObjectId
-  owner         User     @relation(fields: [ownerId], references: [id])
-  device        Device?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  Alert Alert[]
-}
-
-model Device {
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId // MongoDB ObjectId
-  name        String
-  deviceId    String @unique
-  gpsTopic   String
-  emergencyTopic   String
-  battLevelTopic   String?
-  accelTopic   String?
-  userId      String? @db.ObjectId
-  user        User? @relation(fields: [userId], references: [id])
-  busId       String? @db.ObjectId @unique
-  assignedBus MiniBus? @relation(fields: [busId], references: [id])
-  gpsData     GPSData[]
-
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-}
-
-model GPSData {
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId // MongoDB ObjectId
-  devId       String
-  device      Device  @relation(fields: [devId], references: [deviceId])
-  lat    Float
-  lon   Float
-  speed       Float    @default(0) // In km/h
-  direction   Float    @default(0) // Angle in degrees
-  altitude   Float    @default(0) // Angle in degrees
-  timestamp   DateTime @default(now()) // MQTT timestamp
-}
-
-model Trip {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  busId       String @db.ObjectId
-  routeId     String @db.ObjectId
-  route      Route @relation(fields: [routeId], references: [id])
-  direction   TripDirection
-  status      TripStatus @default(ONGOING)
-  startTime   DateTime?
-  endTime     DateTime?
-  lastUpdate  DateTime @default(now())
-
-  startLatitude  Float
-  startLongitude Float
-  endLatitude    Float
-  endLongitude   Float
-}
-
-enum TripDirection {
-  FORWARD   // San Isidro → Litex
-  REVERSE   // Litex → San Isidro
-}
-
-enum TripStatus {
-  NOT_STARTED
-  ONGOING
-  COMPLETED
-  CANCELLED
-}
-
-model Route {
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId // MongoDB ObjectId
-  name        String
-  waypoints   Json // Stores an array of lat/lng points
-  createdAt   DateTime @default(now())
-
-  Trip Trip[]
-}
-
-model Alert {
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId // MongoDB ObjectId
-  busId       String @db.ObjectId
-  bus         MiniBus  @relation(fields: [busId], references: [id])
-  type        AlertType
-  lat         String?
-  long        String?
-  message     String
-  timestamp   DateTime @default(now())
-}
-
-enum AlertType {
-  GEOFENCE_BREACH
-  OVERSPEEDING
-  EMERGENCY
-}
-
-model PushSubscription {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  endpoint  String   @unique
-  keys      Json     // Store `keys` object here (auth, p256dh)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  INSTRUCTOR
 }
