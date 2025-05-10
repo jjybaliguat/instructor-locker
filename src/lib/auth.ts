@@ -133,6 +133,7 @@ export const options = {
         token.name = dbUser.name;
         token.email = dbUser.email;
         token.role = dbUser.role;
+        token.admin = dbUser?.admin
         token.instructor = {
           id: dbUser?.instructor?.id,
           name: dbUser?.instructor?.name,
@@ -175,6 +176,7 @@ export const options = {
         session.user.name = token.name;
         session.user.email = token.email;
         session.user.role = token.role;
+        session.user.admin = token.admin;
         session.user.instructor = {
           id: token?.instructor?.id,
           name: token?.instructor?.name,

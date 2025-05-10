@@ -1,8 +1,11 @@
 import React from 'react'
+import { InstructorTable } from '@/components/tables/instructors-table'
 
 const InstructorPage = () => {
   return (
-    <div>InstructorPage</div>
+    <>
+        <InstructorTable />
+    </>
   )
 }
 
