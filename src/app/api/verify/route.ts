@@ -20,7 +20,7 @@ export async function GET(req: Request){
             include: { locker: true }, // Include related locker
           })
 
-          console.log(instructor)
+          // console.log(instructor)
         
           if (!instructor || !instructor.locker?.lockerNumber) {
             return NextResponse.json(
@@ -28,7 +28,19 @@ export async function GET(req: Request){
               { status: 400 }
             )
           }
-        
+          
+          await prisma.locker.update({
+            where: {
+              lockerNumber: instructor.locker?.lockerNumber
+            },
+            data: {
+              status: "OPEN"
+            }
+          })
+          console.log({
+            authenticationStatus: true,
+            assignedLocker: instructor?.locker?.lockerNumber,
+          })
           return NextResponse.json({
             authenticationStatus: true,
             assignedLocker: instructor?.locker?.lockerNumber,
