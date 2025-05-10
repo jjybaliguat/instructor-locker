@@ -52,7 +52,7 @@ const LockerCard = ({
         </div>
         <div className='flex flex-col gap-4 aspect-auto rounded-xl bg-muted/50 p-4'>
             <h1>My QR</h1>
-            <QRCodeRenderer text={user?.instructor?.qrCode} size={200} />
+            <QRCodeRenderer text={user?.instructor?.qrCode} size={256} />
         </div>
     </div>
   )

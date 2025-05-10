@@ -145,6 +145,18 @@ export const options = {
         if (session?.user?.name && session?.user?.email) {
           token.email = session.user.email,
           token.name = session.user.name
+
+                // Optional: Re-fetch the instructor data to include updated qrCode
+          const dbUser = await prisma.user.findUnique({
+            where: { email: session.user.email },
+            include: { instructor: true, admin: true },
+          });
+
+          token.instructor = {
+            id: dbUser?.instructor?.id,
+            name: dbUser?.instructor?.name,
+            qrCode: dbUser?.instructor?.qrCode,
+          };
         }
       }
       
