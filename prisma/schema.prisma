@@ -95,7 +95,7 @@ model InstructorProfile {
 model Locker {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
   lockerNumber Int   @unique // Can be a QR code or any unique code
-  status       LockerStatus @default(CLOSED)
+  status       LockerStatus @default(LOCKED)
   assignedTo   InstructorProfile? @relation(fields: [instructorId], references: [id])
   instructorId String?   @unique @db.ObjectId // One Locker per Instructor
   createdAt    DateTime @default(now())
@@ -103,8 +103,8 @@ model Locker {
 }
 
 enum LockerStatus {
-  CLOSED
-  OPEN
+  LOCKED
+  UNLOCKED
 }
 
 enum Role {
