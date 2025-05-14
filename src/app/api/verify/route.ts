@@ -36,7 +36,7 @@ export async function GET(req: Request){
               lockerNumber: instructor.locker?.lockerNumber
             },
             data: {
-              status: "OPEN"
+              status: "UNLOCKED"
             }
           })
           console.log({

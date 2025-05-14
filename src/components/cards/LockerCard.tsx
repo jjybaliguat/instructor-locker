@@ -19,6 +19,7 @@ const LockerCard = ({
     const user = session?.data?.user
     console.log(user)
     const {data, isLoading} = useSWR(user? "getInstructorLocker" : null, GetInstructorLocker)
+    console.log(data)
 
     async function GetInstructorLocker() {
         try {
