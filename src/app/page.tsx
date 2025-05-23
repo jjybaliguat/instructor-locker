@@ -80,15 +80,16 @@ export default function LoginPage() {
         <Card className="w-full mt-2">
           <CardHeader>
             <CardTitle className="flex gap-2 items-center flex-col md:flex-row">
-              {/* <div className="p-1 bg-slate-100 rounded-[15px]">
+              <div className="p-1 bg-slate-100 rounded-[15px]">
                 <Image
-                  src="/logo.png"
+                  src="/cdm-logo.png"
                   alt=""
                   height={80}
                   width={80}
                 />
-              </div> */}
-              <span className="text-2xl font-bold text-center">Welcome to QR Code Locker System</span></CardTitle>
+              </div>
+              <span className="text-2xl font-bold text-center">Welcome to QR Code Locker System</span>
+            </CardTitle>
             <CardDescription className="text-center"></CardDescription>
           </CardHeader>
           {!!error && (
