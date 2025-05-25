@@ -21,7 +21,7 @@ export async function middleware(req: NextRequest) {
 
   // Redirect logic
   const isProtected = protectedPaths.some((path) => pathname.startsWith(path));
-
+  console.log(isBillingExpired);
   if(isBillingExpired){
     return NextResponse.redirect(new URL("/expired", req.url));
   }else{
