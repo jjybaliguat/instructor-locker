@@ -9,6 +9,7 @@ const secret = process.env.NEXTAUTH_SECRET;  // Make sure to set this in your .e
 export async function middleware(req: NextRequest) {
   // Get the session token from the request cookies
   const token = await getToken({ req, secret });
+  const isBillingExpired = process.env.BILLING_EXPIRED
 
   // Define the paths you want to protect or redirect
   const protectedPaths = ["/dashboard"];  // Example protected paths
@@ -21,7 +22,10 @@ export async function middleware(req: NextRequest) {
   // Redirect logic
   const isProtected = protectedPaths.some((path) => pathname.startsWith(path));
 
-  if (isProtected && !isAuthenticated) {
+  if(isBillingExpired){
+    return NextResponse.redirect(new URL("/expired", req.url));
+  }else{
+    if (isProtected && !isAuthenticated) {
     // If user is not authenticated and trying to access a protected route, redirect to login
     return NextResponse.redirect(new URL(loginPath, req.url));
   }
@@ -31,6 +35,7 @@ export async function middleware(req: NextRequest) {
         return NextResponse.redirect(new URL("/dashboard", req.url)); 
       }
     }
+  }
 
   return NextResponse.next();  // Proceed to the requested page if no redirects are necessary
 }
