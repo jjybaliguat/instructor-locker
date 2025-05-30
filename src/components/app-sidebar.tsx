@@ -69,12 +69,12 @@ const navData = {
       icon: LayoutDashboard,
       // isActive: true
     },
-    {
-      title: "My QR Code",
-      url: "/dashboard/qr",
-      icon: QrCode,
-      // isActive: true
-    },
+    // {
+    //   title: "My QR Code",
+    //   url: "/dashboard/qr",
+    //   icon: QrCode,
+    //   // isActive: true
+    // },
     {
       title: "Profile",
       url: "/dashboard/profile",
